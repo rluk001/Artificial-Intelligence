@@ -9,6 +9,9 @@
 // The Grid class provide a print utility and necessary accessors.
 // Initialization of the Grid class is incomplete.
 //
+#ifndef GRID_H
+#define GRID_H
+
 #include <vector>
 #include <string>
 #include <utility>
@@ -124,3 +127,5 @@ public:
     // Out ->
     void print(const std::pair<int,int> & agentPos = std::make_pair(-1, -1)) const;
 };
+
+#endif

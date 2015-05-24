@@ -398,8 +398,8 @@ int main(int argc, char ** argv)
 			}
 		}
 		StartReset: // Selecting a random starting spot for the agent
-		int startX = rand() % n;
-		int startY = rand() % n;
+		unsigned int startX = rand() % n;
+		unsigned int startY = rand() % n;
 		for(unsigned int o = 0; o < n; o++)
 		{
 			if((startX == randObstaclesX.at(o) && startY == randObstaclesY.at(o)))
@@ -414,27 +414,72 @@ int main(int argc, char ** argv)
 				goto StartReset;
 			}
 		}
-
-		/*for(unsigned int i = 0; i < a.getBounds().first; i++) // Initializing the Gridworld with specific attributes
+		
+		unsigned int rCount = 0;
+		unsigned int pCount = 0;
+		unsigned int oCount = 0;
+		for(unsigned int i = 0; i < a.getBounds().first; i++) // Initializing the Gridworld with specific attributes
 		{
 			for(unsigned int j = 0; j < a.getBounds().second; j++)
 			{
-				GridCell g = grid[i][j];
-				if(i == randRewardX && j == randRewardY)
+				GridCell g = a[make_pair(i, j)];
+				for(unsigned int k = 0; k < m; k++)
+				{
+					if(i != randRewardX.at(k) || j != randRewardY.at(k))
+					{
+						rCount++;
+					}
+					if(i != randPenaltyX.at(k) || j != randPenaltyX.at(k))
+					{
+
+						pCount++;
+					}
+				}
+				for(unsigned int x = 0; x < n; x++)
+				{
+					if(i != randObstaclesX.at(x) || j != randObstaclesY.at(x))
+					{
+						oCount++;
+					}
+				}
+				if(startX != i && startY != j && rCount == m && pCount == m && oCount == n)
+				{
+					/*g.type = BLANK;
+					g.reward = 0.0;
+					g.start = false;*/
+					g = GridCell();
+					
+				}
+				else if(startX == i && startY == j)
+				{
+					g.type = BLANK;
+					g.reward = 0.0; 
+					g.start = true;
+					//g = GridCell(BLANK, 0.0, true);
+				}
+				else if(rCount != m) 
 				{
 					g.type = TERMINAL;
-					g.reward = m; 
+					g.reward = m;
 					g.start = false;
+					//g = GridCell(TERMINAL, 0.0, false);
 				}
-				if(i == randPenaltyX && j == randPenaltyY) 
+				else if(pCount != m)
 				{
 					g.type = TERMINAL;
 					g.reward = (-1*m);
 					g.start = false;
+					//g = GridCell(TERMINAL, (-1*m), false);
 				}
-
+				else if(oCount != m)
+				{
+					g.type = OBSTACLE;
+					g.reward = 0.0;
+					g.start = false;
+					//g = GridCell(OBSTACLE, 0.0, false);
+				}
 			}
-		}*/
+		}
 
 		cout << "Rewards: " << endl;
 		for(unsigned int i = 0; i < m; i++)

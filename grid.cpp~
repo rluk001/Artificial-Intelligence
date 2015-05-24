@@ -349,7 +349,7 @@ int main(int argc, char ** argv)
 			int randObsX = rand() % n;
 			int randObsY = rand() % n;
 			unsigned int obsCount = 0;
-			unsigned int repeat = 0;
+			int repeat = 0;
 			Obstacles:
 			for(unsigned int j = 0; j < m; j++)
 			{

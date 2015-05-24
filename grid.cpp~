@@ -390,6 +390,7 @@ int main(int argc, char ** argv)
 					obsCount = 0;
 				}
 			}
+			cout << "Obstacles: " << endl << randObstaclesX.at(c) << " " << randObstaclesY.at(c) << endl;
 		}
 		/*for(unsigned int i = 0; i < a.getBounds().first; i++) // Initializing the Gridworld with specific attributes
 		{
@@ -426,11 +427,11 @@ int main(int argc, char ** argv)
 		{
 			cout << randPenaltyX[i] << " " << randPenaltyY[i] << endl;
 		}
-		cout << "Obstacles: " << endl;
+		/*cout << "Obstacles: " << endl;
 		for(unsigned int i = 0; i < n; i++)
 		{
 			cout << randObstaclesX[i] << " " << randObstaclesY[i] << endl;
-		}
+		}*/
 	}
 	else
 	{

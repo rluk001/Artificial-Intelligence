@@ -319,6 +319,13 @@ int main(int argc, char ** argv)
 					{
 						penaltyCount++;
 					}
+					else
+					{
+						PenaltyX = rand() % n;
+						PenaltyY = rand() % n;
+						penaltyCount = 0;
+						goto ResetPenalty;
+					}
 					if(penaltyCount == randPenaltyY.size())
 					{
 						randPenaltyX.push_back(PenaltyX);
@@ -337,7 +344,7 @@ int main(int argc, char ** argv)
 			}
 		}
 		
-		for(unsigned int c = 0; c < n; c++)
+		for(unsigned int c = 0; c < n; c++) // Setting up randomized points of obstacles in the gridworld that do not overlap with rewards/penalties
 		{
 			int randObsX = rand() % n;
 			int randObsY = rand() % n;
@@ -346,7 +353,7 @@ int main(int argc, char ** argv)
 			Obstacles:
 			for(unsigned int j = 0; j < m; j++)
 			{
-				if(c == 0 && (randObsX != randRewardX[j] || randObsY != randRewardY[j]) && (randObsX != randPenaltyX[j] || randObsY != randPenaltyY[j]))
+				if(c == 0 && (randObsX != randRewardX.at(j) || randObsY != randRewardY.at(j)) && (randObsX != randPenaltyX.at(j) || randObsY != randPenaltyY.at(j)))
 				{
 					repeat++;
 				}
@@ -356,7 +363,7 @@ int main(int argc, char ** argv)
 					randObstaclesY.push_back(randObsY);
 					break;
 				}
-				else if(c == 0 && (randObsX == randRewardX[j] || randObsY == randRewardY[j]) && (randObsX == randPenaltyX[j] || randObsY == randPenaltyY[j]))
+				else if(c == 0 && (randObsX == randRewardX[j] && randObsY == randRewardY[j]) || (randObsX == randPenaltyX[j]) && (randObsY == randPenaltyY[j]))
 				{
 					randObsX = rand() % n;
 					randObsY = rand() % n;
@@ -365,13 +372,19 @@ int main(int argc, char ** argv)
 				}
 				else if(c != 0)
 				{
-					ResetObs:
 					for(unsigned int k = 0; k < randObstaclesX.size(); k++)
 					{
 						if((randObsX != randRewardX.at(j) || randObsY != randRewardY.at(j)) && (randObsX != randPenaltyX.at(j) || randObsY != randPenaltyY.at(j)) 
-						&& (randObsX != randObstaclesX.at(k)) || randObsY != randObstaclesY.at(k))
+						&& (randObsX != randObstaclesX.at(k) || randObsY != randObstaclesY.at(k)))
 						{
 							obsCount++;
+						}
+						else 
+						{
+							randObsX = rand() % n;
+							randObsY = rand() % n;
+							obsCount = 0;
+							goto Obstacles;
 						}
 						if(obsCount == randObstaclesX.size())
 						{
@@ -379,18 +392,29 @@ int main(int argc, char ** argv)
 							randObstaclesY.push_back(randObsY);
 							break;	
 						}
-						else if(k ==  (randObstaclesX.size()-1))
-						{
-							randObsX = rand() % n;
-							randObsY = rand() % n;
-							obsCount = 0;
-							goto ResetObs;
-						}
 					}
 					obsCount = 0;
 				}
 			}
 		}
+		StartReset: // Selecting a random starting spot for the agent
+		int startX = rand() % n;
+		int startY = rand() % n;
+		for(unsigned int o = 0; o < n; o++)
+		{
+			if((startX == randObstaclesX.at(o) && startY == randObstaclesY.at(o)))
+			{
+				goto StartReset;
+			}
+		}
+		for(unsigned int j = 0; j < m; j++)
+		{
+			if((startX == randRewardX.at(j) && startY == randRewardY.at(j)) || (startX == randPenaltyX.at(j) && startY == randPenaltyY.at(j)))
+			{
+				goto StartReset;
+			}
+		}
+
 		/*for(unsigned int i = 0; i < a.getBounds().first; i++) // Initializing the Gridworld with specific attributes
 		{
 			for(unsigned int j = 0; j < a.getBounds().second; j++)
@@ -408,14 +432,10 @@ int main(int argc, char ** argv)
 					g.reward = (-1*m);
 					g.start = false;
 				}
-				else if(i
+
 			}
-		}
-		for(unsigned int i = 0; i < m; i++)
-		{
-			cout << "Pairs: " << randRewardX.at(i) << "," << randRewardY.at(i) << endl;
-			cout << "Penalties: " << randPenaltyX.at(i) << "," << randPenaltyY.at(i) << endl;
 		}*/
+
 		cout << "Rewards: " << endl;
 		for(unsigned int i = 0; i < m; i++)
 		{
@@ -431,6 +451,7 @@ int main(int argc, char ** argv)
 		{
 			cout << randObstaclesX[i] << " " << randObstaclesY[i] << endl;
 		}
+		cout << "Starting Point: " << endl << startX << " " << startY << endl;
 	}
 	else
 	{

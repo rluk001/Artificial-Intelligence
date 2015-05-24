@@ -57,7 +57,7 @@ struct GridCell
     // BLANK - traversable cell
     // TERMINAL - episode ends if agent ever steps on this cell
     // OBSTACLE - non-traversable cell
-    enum GridCellType { BLANK, TERMINAL, OBSTACLE };
+    enum GridCellType {BLANK, TERMINAL, OBSTACLE};
     GridCellType type;
     
     // Reward for landing on this cell.

@@ -6,8 +6,8 @@
 // 
 // You are encouraged to modify and add to this file
 //////////////////////////////
-#include "grid.h"
 
+#include "grid.h"
 #include <iostream>
 #include <iomanip>
 #include <cfloat>
@@ -346,60 +346,61 @@ int main(int argc, char ** argv)
 		
 		for(unsigned int c = 0; c < n; c++) // Setting up randomized points of obstacles in the gridworld that do not overlap with rewards/penalties
 		{
+			Obstacles:
 			int randObsX = rand() % n;
 			int randObsY = rand() % n;
+			bool checkTrue = false;
 			unsigned int obsCount = 0;
 			unsigned int repeat = 0;
-			Obstacles:
 			for(unsigned int j = 0; j < m; j++)
 			{
-				if(c == 0 && (randObsX != randRewardX.at(j) || randObsY != randRewardY.at(j)) && (randObsX != randPenaltyX.at(j) || randObsY != randPenaltyY.at(j)))
+				if(c == 0 && (((randObsX != randRewardX.at(j)) || (randObsY != randRewardY.at(j))) && ((randObsX != randPenaltyX.at(j)) || (randObsY != randPenaltyY.at(j)))))
 				{
 					repeat++;
 				}
-				if(repeat == m)
+				else if(c == 0 && ((randObsX == randRewardX.at(j) && randObsY == randRewardY.at(j)) || ((randObsX == randPenaltyX.at(j)) && (randObsY == randPenaltyY.at(j))))) 
+				{
+					goto Obstacles;
+				}
+				if(c == 0 && repeat == m)
 				{
 					randObstaclesX.push_back(randObsX);
 					randObstaclesY.push_back(randObsY);
 					break;
 				}
-				else if(c == 0 && ((randObsX == randRewardX[j] && randObsY == randRewardY[j]) || (randObsX == randPenaltyX[j] && randObsY == randPenaltyY[j])))
-				{
-					randObsX = rand() % n;
-					randObsY = rand() % n;
-					repeat = 0;
-					goto Obstacles;
-				}
 				else if(c != 0)
 				{
 					for(unsigned int k = 0; k < randObstaclesX.size(); k++)
 					{
-						if((randObsX != randRewardX.at(j) || randObsY != randRewardY.at(j)) && (randObsX != randPenaltyX.at(j) || randObsY != randPenaltyY.at(j)) 
-						&& (randObsX != randObstaclesX.at(k) || randObsY != randObstaclesY.at(k)))
+						if(((randObsX != randRewardX.at(j)) || (randObsY != randRewardY.at(j))) && ((randObsX != randPenaltyX.at(j)) || (randObsY != randPenaltyY.at(j))) 
+						&& ((randObsX != randObstaclesX.at(k)) || (randObsY != randObstaclesY.at(k))))
 						{
 							obsCount++;
 						}
-						else 
+						else if(((randObsX == randRewardX.at(j)) && (randObsY == randRewardY.at(j))) || ((randObsX == randPenaltyX.at(j)) && (randObsY == randPenaltyY.at(j))) 
+						|| ((randObsX == randObstaclesX.at(k)) && (randObsY == randObstaclesY.at(k)))) 
 						{
-							randObsX = rand() % n;
-							randObsY = rand() % n;
-							obsCount = 0;
 							goto Obstacles;
 						}
-						if(obsCount == randObstaclesX.size())
+						if(obsCount == (randObstaclesX.size()*m))
 						{
 							randObstaclesX.push_back(randObsX);
 							randObstaclesY.push_back(randObsY);
+							checkTrue = true;
 							break;	
 						}
 					}
-					obsCount = 0;
+				}
+				if(checkTrue)
+				{
+					checkTrue = false;
+					break;
 				}
 			}
 		}
 		StartReset: // Selecting a random starting spot for the agent
-		unsigned int startX = rand() % n;
-		unsigned int startY = rand() % n;
+		int startX = rand() % n;
+		int startY = rand() % n;
 		for(unsigned int o = 0; o < n; o++)
 		{
 			if((startX == randObstaclesX.at(o) && startY == randObstaclesY.at(o)))
@@ -415,23 +416,22 @@ int main(int argc, char ** argv)
 			}
 		}
 		
-		unsigned int rCount = 0;
-		unsigned int pCount = 0;
-		unsigned int oCount = 0;
-		for(unsigned int i = 0; i < a.getBounds().first; i++) // Initializing the Gridworld with specific attributes
+		for(int i = 0; i < a.getBounds().first; i++) // Initializing the Gridworld with specific attributes
 		{
-			for(unsigned int j = 0; j < a.getBounds().second; j++)
+			for(int j = 0; j < a.getBounds().second; j++)
 			{
-				GridCell g = a[make_pair(i, j)];
+				unsigned int rCount = 0;
+				unsigned int pCount = 0;
+				unsigned int oCount = 0;
+				GridCell g = GridCell();
 				for(unsigned int k = 0; k < m; k++)
 				{
 					if(i != randRewardX.at(k) || j != randRewardY.at(k))
 					{
 						rCount++;
 					}
-					if(i != randPenaltyX.at(k) || j != randPenaltyX.at(k))
+					if(i != randPenaltyX.at(k) || j != randPenaltyY.at(k))
 					{
-
 						pCount++;
 					}
 				}
@@ -442,45 +442,46 @@ int main(int argc, char ** argv)
 						oCount++;
 					}
 				}
-				if(startX != i && startY != j && rCount == m && pCount == m && oCount == n)
+				if(startX == i && startY == j)
 				{
-					/*g.type = BLANK;
-					g.reward = 0.0;
-					g.start = false;*/
-					g = GridCell();
-					
-				}
-				else if(startX == i && startY == j)
-				{
-					g.type = BLANK;
+					g.type = GridCell::BLANK;
 					g.reward = 0.0; 
 					g.start = true;
-					//g = GridCell(BLANK, 0.0, true);
+					a[make_pair(i,j)] = g;
+					continue;
 				}
-				else if(rCount != m) 
+				if(rCount != m) 
 				{
-					g.type = TERMINAL;
-					g.reward = m;
+					g.type = GridCell::TERMINAL;
+					g.reward = 10;
 					g.start = false;
-					//g = GridCell(TERMINAL, 0.0, false);
+					a[make_pair(i,j)] = g;
+					continue;
 				}
-				else if(pCount != m)
+				if(pCount != m) 
 				{
-					g.type = TERMINAL;
-					g.reward = (-1*m);
+					g.type = GridCell::TERMINAL;
+					g.reward = -10;
 					g.start = false;
-					//g = GridCell(TERMINAL, (-1*m), false);
+					a[make_pair(i,j)] = g;
+					continue;	
 				}
-				else if(oCount != m)
+				if(oCount != n)
 				{
-					g.type = OBSTACLE;
+					g.type = GridCell::OBSTACLE;
 					g.reward = 0.0;
 					g.start = false;
-					//g = GridCell(OBSTACLE, 0.0, false);
+					a[make_pair(i,j)] = g;
+					continue;
 				}
+				g.type = GridCell::BLANK;
+				g.reward = 0.0;
+				g.start = false;
+				a[make_pair(i,j)] = g;
 			}
 		}
-
+		//cout << a.getStartLocation().first << " " << a.getStartLocation().second << endl;
+		a.print(make_pair(startX, startY));
 		cout << "Rewards: " << endl;
 		for(unsigned int i = 0; i < m; i++)
 		{

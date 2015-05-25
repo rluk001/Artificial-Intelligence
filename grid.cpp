@@ -417,7 +417,6 @@ int main(int argc, char ** argv)
 		}
 		
 		Grid a = Grid(n, startX, startY);
-
 		for(int i = 0; i < a.getBounds().first; i++) // Initializing the Gridworld with specific attributes
 		{
 			for(int j = 0; j < a.getBounds().second; j++)
@@ -488,6 +487,7 @@ int main(int argc, char ** argv)
 			}
 		}
 		a.print(make_pair(startX, startY));
+		bool outside = false;
 		for(unsigned int i = 0; i < 100000; i++)
 		{
 			GridCell g = a[a.getStartLocation()];
@@ -500,6 +500,7 @@ int main(int argc, char ** argv)
 			if(rerollWorld >= 1000)
 			{
 				cout << "No Possible Values - Start again to remake world!!!" << endl;
+				outside = true;
 				break;
 			}
 
@@ -533,6 +534,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxFirst = -1;
+							wall1 = true;
 						}
 						else
 						{
@@ -550,6 +552,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxSecond = -1;
+							wall2 = true;
 						}
 						else
 						{
@@ -567,6 +570,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxFour = -1;
+							wall4 = true;
 						}
 						else
 						{
@@ -665,6 +669,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxFirst = -1;
+							wall1 = true;
 						}
 						else
 						{
@@ -682,6 +687,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxSecond = -1;
+							wall2 = true;
 						}
 						else
 						{
@@ -699,6 +705,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxFour = -1;
+							wall4 = true;
 						}
 						else
 						{
@@ -812,6 +819,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxFirst = -1;
+							wall1 = true;
 						}
 						else
 						{
@@ -829,6 +837,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxSecond = -1;
+							wall2 = true;
 						}
 						else
 						{
@@ -846,6 +855,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxFour = -1;
+							wall4 = true;
 						}
 						else
 						{
@@ -944,6 +954,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxFirst = -1;
+							wall1 = true;
 						}
 						else
 						{
@@ -961,6 +972,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxSecond = -1;
+							wall2 = true;
 						}
 						else
 						{
@@ -978,6 +990,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxFour = -1;
+							wall4 = true;
 						}
 						else
 						{
@@ -1091,6 +1104,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxFirst = -1;
+							wall1 = true;
 						}
 						else
 						{
@@ -1108,6 +1122,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxSecond = -1;
+							wall2 = true;
 						}
 						else
 						{
@@ -1125,6 +1140,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxFour = -1;
+							wall4 = true;
 						}
 						else
 						{
@@ -1223,6 +1239,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxFirst = -1;
+							wall1 = true;
 						}
 						else
 						{
@@ -1240,6 +1257,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxSecond = -1;
+							wall2 = true;
 						}
 						else
 						{
@@ -1257,6 +1275,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxFour = -1;
+							wall4 = true;
 						}
 						else
 						{
@@ -1370,6 +1389,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxFirst = -1;
+							wall1 = true;
 						}
 						else
 						{
@@ -1387,6 +1407,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxSecond = -1;
+							wall2 = true;
 						}
 						else
 						{
@@ -1404,6 +1425,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxFour = -1;
+							wall4 = true;
 						}
 						else
 						{	
@@ -1502,6 +1524,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxFirst = -1;
+							wall1 = true;
 						}
 						else
 						{
@@ -1519,6 +1542,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxSecond = -1;
+							wall2 = true;
 						}
 						else
 						{
@@ -1536,6 +1560,7 @@ int main(int argc, char ** argv)
 						if(h.type == GridCell::OBSTACLE)
 						{
 							maxFour = -1;
+							wall4 = true;
 						}
 						else
 						{	
@@ -1620,7 +1645,10 @@ int main(int argc, char ** argv)
 				}
 			}
 		}
-		a.print(make_pair(startX, startY));
+		if(!outside)
+		{
+			a.print(make_pair(startX, startY));
+		}
 		//cout << a.getBounds().first << " " << a.getBounds().second << endl;
 		//cout << a.getRows() << " " << a.getCols() << endl;
 		//cout << a.getStartLocation().first << " " << a.getStartLocation().second << endl;

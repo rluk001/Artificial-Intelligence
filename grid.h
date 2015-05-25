@@ -74,7 +74,7 @@ struct GridCell
     
     // Constructors
     GridCell();
-    GridCell(GridCellType type, double reward = 0.0, bool start = false, int lRate = 0.0);
+    GridCell(GridCellType type, double reward = 0.0, bool start = false, int lRate = 0);
     
     ///////////
     // Function print

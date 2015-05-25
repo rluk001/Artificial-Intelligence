@@ -548,7 +548,15 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree; 
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward + ((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst)
+					if(a[pair<int,int>(xCoord, yCoord-1)].type == GridCell::OBSTACLE && a[pair<int,int>(xCoord, yCoord+1)].type == GridCell::OBSTACLE && maxThree > 0)
+					{
+						g.policy = make_pair(NORTH, eq);
+					}
+					else if(a[pair<int,int>(xCoord, yCoord-1)].type == GridCell::OBSTACLE && a[pair<int,int>(xCoord, yCoord+1)].type == GridCell::OBSTACLE && maxThree < 0)
+					{
+						g.policy = make_pair(SOUTH, eq);
+					}
+					else if(maxThree > maxSecond && maxThree > maxFirst)
 					{
 						g.policy = make_pair(NORTH, eq); 
 					}
@@ -595,7 +603,15 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree; 
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward + ((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst)
+					if(a[pair<int,int>(xCoord, yCoord-1)].type == GridCell::OBSTACLE && a[pair<int,int>(xCoord, yCoord+1)].type == GridCell::OBSTACLE && maxThree > 0)
+					{
+						g.policy = make_pair(NORTH, eq);
+					}
+					else if(a[pair<int,int>(xCoord, yCoord-1)].type == GridCell::OBSTACLE && a[pair<int,int>(xCoord, yCoord+1)].type == GridCell::OBSTACLE && maxThree < 0)
+					{
+						g.policy = make_pair(SOUTH, eq);
+					}
+					else if(maxThree > maxSecond && maxThree > maxFirst)
 					{
 						g.policy = make_pair(NORTH, eq); 
 					}
@@ -609,7 +625,7 @@ int main(int argc, char ** argv)
 					}
 					else
 					{
-						g.policy = make_pair(SOUTH, eq);
+						g.policy = make_pair(NONE, eq);
 					}
 					a[pair<int, int>(xCoord, yCoord)] = g;
 					xCoord = xCoord - 1;
@@ -666,7 +682,15 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst)
+					if(a[pair<int,int>(xCoord-1, yCoord)].type == GridCell::OBSTACLE && a[pair<int,int>(xCoord+1, yCoord)].type == GridCell::OBSTACLE && maxThree > 0)
+					{
+						g.policy = make_pair(EAST, eq);
+					}
+					else if(a[pair<int,int>(xCoord-1, yCoord)].type == GridCell::OBSTACLE && a[pair<int,int>(xCoord+1, yCoord)].type == GridCell::OBSTACLE && maxThree < 0)
+					{
+						g.policy = make_pair(WEST, eq);
+					}
+					else if(maxThree > maxSecond && maxThree > maxFirst)
 					{
 						g.policy = make_pair(EAST, eq);
 					}
@@ -706,7 +730,15 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst)
+					if(a[pair<int,int>(xCoord-1, yCoord)].type == GridCell::OBSTACLE && a[pair<int,int>(xCoord+1, yCoord)].type == GridCell::OBSTACLE && maxThree > 0)
+					{
+						g.policy = make_pair(EAST, eq);
+					}
+					else if(a[pair<int,int>(xCoord-1, yCoord)].type == GridCell::OBSTACLE && a[pair<int,int>(xCoord+1, yCoord)].type == GridCell::OBSTACLE && maxThree < 0)
+					{
+						g.policy = make_pair(WEST, eq);
+					}
+					else if(maxThree > maxSecond && maxThree > maxFirst)
 					{
 						g.policy = make_pair(EAST, eq);
 					}
@@ -720,7 +752,7 @@ int main(int argc, char ** argv)
 					}
 					else
 					{
-						g.policy = make_pair(WEST, eq);
+						g.policy = make_pair(NONE, eq);
 					}
 					a[pair<int, int>(xCoord, yCoord)] = g;
 					yCoord = yCoord + 1;
@@ -777,7 +809,15 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst)
+					if(a[pair<int,int>(xCoord, yCoord-1)].type == GridCell::OBSTACLE && a[pair<int,int>(xCoord, yCoord+1)].type == GridCell::OBSTACLE && maxThree > 0)
+					{
+						g.policy = make_pair(SOUTH, eq);
+					}
+					else if(a[pair<int,int>(xCoord, yCoord-1)].type == GridCell::OBSTACLE && a[pair<int,int>(xCoord, yCoord+1)].type == GridCell::OBSTACLE && maxThree < 0)
+					{
+						g.policy = make_pair(NORTH, eq);
+					}
+					else if(maxThree > maxSecond && maxThree > maxFirst)
 					{
 						g.policy = make_pair(SOUTH, eq);	
 					}
@@ -817,7 +857,15 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst)
+					if(a[pair<int,int>(xCoord, yCoord-1)].type == GridCell::OBSTACLE && a[pair<int,int>(xCoord, yCoord+1)].type == GridCell::OBSTACLE && maxThree > 0)
+					{
+						g.policy = make_pair(SOUTH, eq);
+					}
+					else if(a[pair<int,int>(xCoord, yCoord-1)].type == GridCell::OBSTACLE && a[pair<int,int>(xCoord, yCoord+1)].type == GridCell::OBSTACLE && maxThree < 0)
+					{
+						g.policy = make_pair(NORTH, eq);
+					}
+					else if(maxThree > maxSecond && maxThree > maxFirst)
 					{
 						g.policy = make_pair(SOUTH, eq);	
 					}
@@ -831,7 +879,7 @@ int main(int argc, char ** argv)
 					}
 					else
 					{
-						g.policy = make_pair(NORTH, eq);
+						g.policy = make_pair(NONE, eq);
 					}
 					a[pair<int, int>(xCoord, yCoord)] = g;
 					xCoord = xCoord + 1;
@@ -888,7 +936,15 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst)
+					if(a[pair<int,int>(xCoord-1, yCoord)].type == GridCell::OBSTACLE && a[pair<int,int>(xCoord+1, yCoord)].type == GridCell::OBSTACLE && maxThree > 0)
+					{
+						g.policy = make_pair(WEST, eq);
+					}
+					else if(a[pair<int,int>(xCoord-1, yCoord)].type == GridCell::OBSTACLE && a[pair<int,int>(xCoord+1, yCoord)].type == GridCell::OBSTACLE && maxThree < 0)
+					{
+						g.policy = make_pair(EAST, eq);
+					}
+					else if(maxThree > maxSecond && maxThree > maxFirst)
 					{
 						g.policy = make_pair(WEST, eq);
 					}
@@ -928,7 +984,15 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst)
+					if(a[pair<int,int>(xCoord-1, yCoord)].type == GridCell::OBSTACLE && a[pair<int,int>(xCoord+1, yCoord)].type == GridCell::OBSTACLE && maxThree > 0)
+					{
+						g.policy = make_pair(WEST, eq);
+					}
+					else if(a[pair<int,int>(xCoord-1, yCoord)].type == GridCell::OBSTACLE && a[pair<int,int>(xCoord+1, yCoord)].type == GridCell::OBSTACLE && maxThree < 0)
+					{
+						g.policy = make_pair(EAST, eq);
+					}
+					else if(maxThree > maxSecond && maxThree > maxFirst)
 					{
 						g.policy = make_pair(WEST, eq);
 					}
@@ -942,7 +1006,7 @@ int main(int argc, char ** argv)
 					}
 					else
 					{
-						g.policy = make_pair(EAST, eq);
+						g.policy = make_pair(NONE, eq);
 					}
 					a[pair<int, int>(xCoord, yCoord)] = g;
 					yCoord = yCoord - 1;

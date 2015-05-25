@@ -17,6 +17,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 ///////////////
@@ -88,12 +89,12 @@ string toString(Direction dir)
 
 // Constructors
 GridCell::GridCell()
-    : type(BLANK), reward(0.0), start(false), policy(NONE, 0.0)
+    : type(BLANK), reward(0.0), start(false), policy(NONE, 0.0), lRate(0)
 {
 }
 
-GridCell::GridCell(GridCellType type, double reward, bool start)
-    : type(type), reward(reward), start(start), policy(NONE, 0.0)
+GridCell::GridCell(GridCellType type, double reward, bool start, int lRate)
+    : type(type), reward(reward), start(start), policy(NONE, 0.0), lRate(0)
 {
 }
     
@@ -156,11 +157,11 @@ pair<Direction, double> GridCell::getPolicy() const
 // In -> int n, parameter described by assignment prompt
 //       int m, parameter described by assignment prompt
 // Out ->
-Grid::Grid(int n, int m)
+Grid::Grid(int n, int startX, int startY)
 {
     bounds = pair<int,int>(n, n);
     grid = vector<vector<GridCell> >(bounds.first, vector<GridCell>(bounds.second));
-    startLocation = pair<int,int>(-1, -1);
+    startLocation = pair<int,int>(startX, startY);
     
     /* Currently ignores the m parameter in terms of rewards and penalty placement.
         Also ignores n obstacle placement and assigns startLocation to invalid
@@ -260,7 +261,6 @@ int main(int argc, char ** argv)
 	{
 		unsigned int n = atoi(argv[1]);
 		unsigned int m = atoi(argv[2]);
-		Grid a = Grid(n, m);
 		vector <int> randRewardX;
 		vector <int> randRewardY;
 		vector <int> randPenaltyX;
@@ -416,6 +416,8 @@ int main(int argc, char ** argv)
 			}
 		}
 		
+		Grid a = Grid(n, startX, startY);
+
 		for(int i = 0; i < a.getBounds().first; i++) // Initializing the Gridworld with specific attributes
 		{
 			for(int j = 0; j < a.getBounds().second; j++)
@@ -447,6 +449,7 @@ int main(int argc, char ** argv)
 					g.type = GridCell::BLANK;
 					g.reward = 0.0; 
 					g.start = true;
+					g.lRate = 0;
 					a[make_pair(i,j)] = g;
 					continue;
 				}
@@ -455,6 +458,7 @@ int main(int argc, char ** argv)
 					g.type = GridCell::TERMINAL;
 					g.reward = 10;
 					g.start = false;
+					g.lRate = 0;
 					a[make_pair(i,j)] = g;
 					continue;
 				}
@@ -463,6 +467,7 @@ int main(int argc, char ** argv)
 					g.type = GridCell::TERMINAL;
 					g.reward = -10;
 					g.start = false;
+					g.lRate = 0;
 					a[make_pair(i,j)] = g;
 					continue;	
 				}
@@ -471,18 +476,129 @@ int main(int argc, char ** argv)
 					g.type = GridCell::OBSTACLE;
 					g.reward = 0.0;
 					g.start = false;
+					g.lRate = 0;
 					a[make_pair(i,j)] = g;
 					continue;
 				}
 				g.type = GridCell::BLANK;
 				g.reward = 0.0;
 				g.start = false;
+				g.lRate = 0;
 				a[make_pair(i,j)] = g;
 			}
 		}
-		//cout << a.getStartLocation().first << " " << a.getStartLocation().second << endl;
 		a.print(make_pair(startX, startY));
-		cout << "Rewards: " << endl;
+		for(unsigned int i = 0; i < 100000; i++)
+		{
+			GridCell g = a[a.getStartLocation()];
+			int xCoord = a.getStartLocation().first;
+			int yCoord = a.getStartLocation().second;
+			GridCell f = a[pair<int, int>(xCoord, yCoord)];
+			Randomize:
+			unsigned int randDirection = 1;//(rand() % 4) + 1;
+			if(randDirection == 1)
+			{
+				if(xCoord == 0)
+				{
+					goto NumberTwo;
+				}
+				f = a[pair<int, int> (xCoord-1, yCoord)];
+				g.policy = make_pair(NORTH, 0.0);
+				if(f.type == GridCell::OBSTACLE)
+				{
+					goto NumberTwo;
+				}
+				else if(f.type == GridCell::TERMINAL)
+				{
+					double maxFirst = 0.1*a[pair<int,int>(xCoord, yCoord-1)].policy.second;
+					double maxSecond = 0.1*a[pair<int,int>(xCoord, yCoord+1)].policy.second;
+					if(yCoord == 0)
+					{
+						maxFirst = 0.0; 
+					}
+					if(yCoord == n)
+					{
+						maxSecond = 0.0; 
+					}
+					double maxThree = 0.8 * f.reward;
+					double maxNum = maxFirst + maxSecond + maxThree; 
+					f.lRate++;
+					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward + ((0.9*maxNum) - g.policy.second));
+					if(maxThree > maxSecond && maxThree > maxFirst)
+					{
+						g.policy = make_pair(NORTH, eq); 
+					}
+					else if(maxSecond > maxThree && maxSecond > maxFirst)
+					{
+						g.policy = make_pair(EAST, eq);
+					}
+					else if(maxFirst > maxThree && maxFirst > maxThree)
+					{
+						g.policy = make_pair(WEST, eq);
+					}
+					a[pair<int, int>(xCoord, yCoord)] = g;
+					continue;
+					//cout << "MaxNum:" << maxNum << endl;
+					//cout << toString(g.getPolicy().first) << endl;
+					//a.print(make_pair(xCoord, yCoord));
+				}
+				else if(f.type == GridCell::BLANK)
+				{
+					double maxFirst = 0.1*a[pair<int,int>(xCoord, yCoord-1)].policy.second;
+					double maxSecond = 0.1*a[pair<int,int>(xCoord, yCoord+1)].policy.second;
+					if(yCoord == 0)
+					{
+						maxFirst = 0.0; 
+					}
+					if(yCoord == n)
+					{
+						maxSecond = 0.0; 
+					}
+					double maxThree = 0.8 * f.reward;
+					double maxNum = maxFirst + maxSecond + maxThree; 
+					f.lRate++;
+					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward + ((0.9*maxNum) - g.policy.second));
+					if(maxThree > maxSecond && maxThree > maxFirst)
+					{
+						g.policy = make_pair(NORTH, eq); 
+					}
+					else if(maxSecond > maxThree && maxSecond > maxFirst)
+					{
+						g.policy = make_pair(EAST, eq);
+					}
+					else if(maxFirst > maxThree && maxFirst > maxThree)
+					{
+						g.policy = make_pair(WEST, eq);
+					}
+					else
+					{
+						g.policy = make_pair(NORTH, eq);
+					}
+					a[pair<int, int>(xCoord, yCoord)] = g;
+					g = a[pair<int,int>(xCoord-1, yCoord)];
+					goto Randomize;
+				}
+			}
+			else if(randDirection == 2)
+			{
+				NumberTwo:
+				;	
+			}
+			else if(randDirection == 3)
+			{
+				GridCell g = a[a.getStartLocation()];
+
+			}
+			else if(randDirection == 4)
+			{
+				GridCell g = a[a.getStartLocation()];
+			}
+		}
+		//a.print(make_pair(startX, startY));
+		//cout << a.getBounds().first << " " << a.getBounds().second << endl;
+		//cout << a.getRows() << " " << a.getCols() << endl;
+		//cout << a.getStartLocation().first << " " << a.getStartLocation().second << endl;
+		cout << "Rewards: " << endl;  // Testing Purposes
 		for(unsigned int i = 0; i < m; i++)
 		{
 			cout << randRewardX[i] << " " << randRewardY[i] << endl;

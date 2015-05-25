@@ -65,13 +65,16 @@ struct GridCell
     
     // Flag which specifies whether this is a start location for the agent.
     bool start;
+
+    // Number of times the current state is visited
+    int lRate;
     
     // Current policy where the first is the direction and the second is the value.
     std::pair<Direction, double> policy;
     
     // Constructors
     GridCell();
-    GridCell(GridCellType type, double reward = 0.0, bool start = false);
+    GridCell(GridCellType type, double reward = 0.0, bool start = false, int lRate = 0.0);
     
     ///////////
     // Function print
@@ -108,7 +111,7 @@ private:
     std::pair<int,int> startLocation;
 public:
     // Constructors
-    Grid(int n, int m);
+    Grid(int n, int startX, int startY);
     
     // Accessors to the 2D grid
     GridCell& operator[](const std::pair<int,int> & pos);

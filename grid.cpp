@@ -549,6 +549,7 @@ int main(int argc, char ** argv)
 						g.policy = make_pair(WEST, eq);
 					}
 					a[pair<int, int>(xCoord, yCoord)] = g;
+					a[pair<int, int>(xCoord-1, yCoord)] = f;
 					continue;
 					//cout << "MaxNum:" << maxNum << endl;
 					//cout << toString(g.getPolicy().first) << endl;
@@ -588,6 +589,7 @@ int main(int argc, char ** argv)
 					}
 					a[pair<int, int>(xCoord, yCoord)] = g;
 					xCoord = xCoord - 1;
+					a[pair<int, int>(xCoord, yCoord)] = f;
 					g = a[pair<int,int>(xCoord, yCoord)];
 					goto Randomize;
 				}
@@ -595,7 +597,19 @@ int main(int argc, char ** argv)
 			else if(randDirection == 2)
 			{
 				NumberTwo:
-				if(xCoord == n)
+				if(g.policy.first == NORTH)
+				{
+					goto NumberOne;
+				}
+				else if(g.policy.first == WEST)
+				{
+					goto NumberFour;
+				}
+				else if(g.policy.first == SOUTH)
+				{
+					goto NumberThree;
+				}
+				if(yCoord == n)
 				{
 					goto NumberThree;
 				}
@@ -610,18 +624,80 @@ int main(int argc, char ** argv)
 					double maxSecond = 0.1*a[pair<int,int>(xCoord+1, yCoord)].policy.second;
 					if(xCoord == 0)
 					{
-						
+						maxFirst = 0.0;
 					}
+					if(xCoord == n)
+					{
+						maxSecond = 0.0;
+					}
+					double maxThree = 0.8 * f.reward;
+					double maxNum = maxFirst + maxSecond + maxThree;
+					f.lRate++;
+					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
+					if(maxThree > maxSecond && maxThree > maxFirst)
+					{
+						g.policy = make_pair(EAST, eq);
+					}
+					else if(maxSecond > maxThree && maxSecond > maxFirst)
+					{
+						g.policy = make_pair(SOUTH, eq);
+					}
+					else if(maxFirst > maxThree && maxFirst > maxSecond)
+					{
+						g.policy = make_pair(NORTH, eq);
+					}
+					a[pair<int, int>(xCoord, yCoord)] = g;
+					continue;
+				}
+				else if(f.type == GridCell::BLANK)
+				{
+					double maxFirst = 0.1*a[pair<int,int>(xCoord-1, yCoord)].policy.second;
+					double maxSecond = 0.1*a[pair<int,int>(xCoord+1, yCoord)].policy.second;
+					if(xCoord == 0)
+					{
+						maxFirst = 0.0;
+					}
+					if(xCoord == n)
+					{
+						maxSecond = 0.0;
+					}
+					double maxThree = 0.8 * f.reward;
+					double maxNum = maxFirst + maxSecond + maxThree;
+					f.lRate++;
+					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
+					if(maxThree > maxSecond && maxThree > maxFirst)
+					{
+						g.policy = make_pair(EAST, eq);
+					}
+					else if(maxSecond > maxThree && maxSecond > maxFirst)
+					{
+						g.policy = make_pair(SOUTH, eq);
+					}
+					else if(maxFirst > maxThree && maxFirst > maxSecond)
+					{
+						g.policy = make_pair(NORTH, eq);
+					}
+					else
+					{
+						g.policy = make_pair(EAST, eq);
+					}
+					a[pair<int, int>(xCoord, yCoord)] = g;
+					yCoord = yCoord + 1;
+					a[pair<int, int>(xCoord, yCoord)] = f;
+					g = a[pair<int, int>(xCoord, yCoord)];
+					goto Randomize;
 				}
 			}
 			else if(randDirection == 3)
 			{
 				NumberThree:
+				;
 
 			}
 			else if(randDirection == 4)
 			{
 				NumberFour:
+				;
 			}
 		}
 		//a.print(make_pair(startX, startY));

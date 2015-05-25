@@ -494,23 +494,17 @@ int main(int argc, char ** argv)
 			unsigned int xCoord = a.getStartLocation().first;
 			unsigned int yCoord = a.getStartLocation().second;
 			GridCell f = a[pair<int, int>(xCoord, yCoord)];
+			unsigned rerollWorld = 0;
 			Randomize:
 			unsigned int randDirection = (rand() % 4) + 1;
+			if(rerollWorld >= 1000)
+			{
+				cout << "No Possible Values - Start again to remake world!!!" << endl;
+				break;
+			}
+
 			if(randDirection == 1)
 			{
-				NumberOne:
-				/*if(g.policy.first == WEST)
-				{
-					goto NumberFour;
-				}
-				else if(g.policy.first == EAST)
-				{
-					goto NumberTwo;
-				}
-				else if(g.policy.first == SOUTH)
-				{
-					goto NumberThree;
-				}*/
 				if(xCoord == 0)
 				{
 					goto Randomize;
@@ -524,16 +518,21 @@ int main(int argc, char ** argv)
 				{
 					double maxFirst = 0.0; 
 					double maxSecond = 0.0; 
+					double maxFour = 0.0;
+					bool wall1 = false;
+					bool wall2 = false;
+					bool wall4 = false;
 					if(yCoord == 0)
 					{
-						maxFirst = -4; 
+						maxFirst = -1; 
+						wall1 = true;
 					}
 					else 
 					{
 						GridCell h = a[pair<int, int>(xCoord, yCoord-1)];
 						if(h.type == GridCell::OBSTACLE)
 						{
-							maxFirst = -4;
+							maxFirst = -1;
 						}
 						else
 						{
@@ -542,39 +541,102 @@ int main(int argc, char ** argv)
 					}
 					if(yCoord == (n-1))
 					{
-						maxSecond = -4; 
+						maxSecond = -1; 
+						wall2 = true;
 					}
 					else
 					{
 						GridCell h = a[pair<int,int>(xCoord, yCoord+1)];
 						if(h.type == GridCell::OBSTACLE)
 						{
-							maxSecond = -4;
+							maxSecond = -1;
 						}
 						else
 						{
 							maxSecond = 0.1*a[pair<int,int>(xCoord, yCoord+1)].policy.second;
 						}
 					}
-					/*if(a[pair<int,int>(xCoord, yCoord-1)].type == GridCell::OBSTACLE || a[pair<int,int>(xCoord, yCoord+1)].type == GridCell::OBSTACLE)
+					if(xCoord == (n-1))
 					{
-						goto Randomize;
-					}*/
-					double maxThree = 0.8 * f.reward;
-					double maxNum = maxFirst + maxSecond + maxThree; 
+						maxFour = -1;	
+						wall4 = true;
+					}
+					else
+					{
+						GridCell h = a[pair<int, int>(xCoord+1, yCoord)];
+						if(h.type == GridCell::OBSTACLE)
+						{
+							maxFour = -1;
+						}
+						else
+						{
+							maxFour = 0.1*a[pair<int,int>(xCoord+1, yCoord)].policy.second;
+						}
+					}
+					double maxThree = 0.7 * f.reward;
+					double maxNum = maxFirst + maxSecond + maxThree + maxFour; 
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward + ((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst)
+					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour)
 					{
-						g.policy = make_pair(NORTH, eq); 
+						g.policy = make_pair(NORTH, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst)
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2) 
 					{
 						g.policy = make_pair(EAST, eq);
 					}
-					else if(maxFirst > maxThree && maxFirst > maxThree)
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
+					{
+						if(maxThree > maxFirst && maxThree > maxFour)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
+						else if(maxFirst > maxThree && maxFirst > maxFour)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
+						else if(maxFour > maxThree && maxFour > maxFirst)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+					}
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
 					{
 						g.policy = make_pair(WEST, eq);
+					}
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
+					{
+						if(maxThree > maxSecond && maxThree > maxFour)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
+						else if(maxSecond > maxThree && maxSecond > maxFour)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+						else if(maxFour > maxThree && maxFour > maxSecond)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+					}
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
+					{
+						g.policy = make_pair(SOUTH, eq);
+					}
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
+					{
+						if(maxThree > maxSecond && maxThree > maxFirst)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
+						else if(maxSecond > maxThree && maxSecond > maxFirst)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+						else if(maxFirst > maxThree && maxFirst > maxSecond)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
 					}
 					else
 					{
@@ -583,24 +645,26 @@ int main(int argc, char ** argv)
 					a[pair<int, int>(xCoord, yCoord)] = g;
 					a[pair<int, int>(xCoord-1, yCoord)] = f;
 					continue;
-					//cout << "MaxNum:" << maxNum << endl;
-					//cout << toString(g.getPolicy().first) << endl;
-					//a.print(make_pair(xCoord, yCoord));
 				}
 				else if(f.type == GridCell::BLANK)
 				{
 					double maxFirst = 0.0; 
 					double maxSecond = 0.0; 
+					double maxFour = 0.0;
+					bool wall1 = false;
+					bool wall2 = false;
+					bool wall4 = false;
 					if(yCoord == 0)
 					{
-						maxFirst = -4; 
+						maxFirst = -1; 
+						wall1 = true;
 					}
 					else 
 					{
 						GridCell h = a[pair<int, int>(xCoord, yCoord-1)];
 						if(h.type == GridCell::OBSTACLE)
 						{
-							maxFirst = -4;
+							maxFirst = -1;
 						}
 						else
 						{
@@ -609,66 +673,117 @@ int main(int argc, char ** argv)
 					}
 					if(yCoord == (n-1))
 					{
-						maxSecond = -4; 
+						maxSecond = -1; 
+						wall2 = true;
 					}
 					else
 					{
 						GridCell h = a[pair<int,int>(xCoord, yCoord+1)];
 						if(h.type == GridCell::OBSTACLE)
 						{
-							maxSecond = -4;
+							maxSecond = -1;
 						}
 						else
 						{
 							maxSecond = 0.1*a[pair<int,int>(xCoord, yCoord+1)].policy.second;
 						}
 					}
-					/*if(a[pair<int,int>(xCoord, yCoord-1)].type == GridCell::OBSTACLE || a[pair<int,int>(xCoord, yCoord+1)].type == GridCell::OBSTACLE)
+					if(xCoord == (n-1))
 					{
-						goto Randomize;
-					}*/
-					double maxThree = 0.8 * f.reward;
-					double maxNum = maxFirst + maxSecond + maxThree; 
+						maxFour = -1;	
+						wall4 = true;
+					}
+					else
+					{
+						GridCell h = a[pair<int, int>(xCoord+1, yCoord)];
+						if(h.type == GridCell::OBSTACLE)
+						{
+							maxFour = -1;
+						}
+						else
+						{
+							maxFour = 0.1*a[pair<int,int>(xCoord+1, yCoord)].policy.second;
+						}
+					}
+					double maxThree = 0.7 * f.policy.second;
+					double maxNum = maxFirst + maxSecond + maxThree + maxFour; 
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward + ((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst)
+					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour)
 					{
-						g.policy = make_pair(NORTH, eq); 
+						g.policy = make_pair(NORTH, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst)
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2) 
 					{
 						g.policy = make_pair(EAST, eq);
 					}
-					else if(maxFirst > maxThree && maxFirst > maxThree)
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
+					{
+						if(maxThree > maxFirst && maxThree > maxFour)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
+						else if(maxFirst > maxThree && maxFirst > maxFour)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
+						else if(maxFour > maxThree && maxFour > maxFirst)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+					}
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
 					{
 						g.policy = make_pair(WEST, eq);
 					}
-					/*else
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
+					{
+						if(maxThree > maxSecond && maxThree > maxFour)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
+						else if(maxSecond > maxThree && maxSecond > maxFour)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+						else if(maxFour > maxThree && maxFour > maxSecond)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+					}
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
 					{
 						g.policy = make_pair(SOUTH, eq);
-					}*/
+					}
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
+					{
+						if(maxThree > maxSecond && maxThree > maxFirst)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
+						else if(maxSecond > maxThree && maxSecond > maxFirst)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+						else if(maxFirst > maxThree && maxFirst > maxSecond)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
+					}
+					else
+					{
+						g.policy = make_pair(NORTH, eq);
+					}
 					a[pair<int, int>(xCoord, yCoord)] = g;
 					xCoord = xCoord - 1;
 					a[pair<int, int>(xCoord, yCoord)] = f;
 					g = a[pair<int,int>(xCoord, yCoord)];
+					rerollWorld++;
 					goto Randomize;
 				}
 			}
 			else if(randDirection == 2)
 			{
-				NumberTwo:
-				/*if(g.policy.first == NORTH)
-				{
-					goto NumberOne;
-				}
-				else if(g.policy.first == WEST)
-				{
-					goto NumberFour;
-				}
-				else if(g.policy.first == SOUTH)
-				{
-					goto NumberThree;
-				}*/
 				if(yCoord == (n-1))
 				{
 					goto Randomize;
@@ -682,16 +797,21 @@ int main(int argc, char ** argv)
 				{
 					double maxFirst = 0.0;
 					double maxSecond = 0.0;
+					double maxFour = 0.0;
+					bool wall1 = false;
+					bool wall2 = false;
+					bool wall4 = false;
 					if(xCoord == 0)
 					{
-						maxFirst = -4; 
+						maxFirst = -1; 
+						wall1 = true;
 					}
 					else 
 					{
 						GridCell h = a[pair<int, int>(xCoord-1, yCoord)];
 						if(h.type == GridCell::OBSTACLE)
 						{
-							maxFirst = -4;
+							maxFirst = -1;
 						}
 						else
 						{
@@ -700,37 +820,104 @@ int main(int argc, char ** argv)
 					}
 					if(xCoord == (n-1))
 					{
-						maxSecond = -4; 
+						maxSecond = -1; 
+						wall2 = true;
 					}
 					else
 					{
 						GridCell h = a[pair<int,int>(xCoord+1, yCoord)];
 						if(h.type == GridCell::OBSTACLE)
 						{
-							maxSecond = -4;
+							maxSecond = -1;
 						}
 						else
 						{
 							maxSecond = 0.1*a[pair<int,int>(xCoord+1, yCoord)].policy.second;
 						}
 					}
-					double maxThree = 0.8 * f.reward;
-					double maxNum = maxFirst + maxSecond + maxThree;
+					if(yCoord == 0)
+					{
+						maxFour = -1;
+						wall4 = true;
+					}
+					else
+					{
+						GridCell h = a[pair<int, int>(xCoord, yCoord-1)];
+						if(h.type == GridCell::OBSTACLE)
+						{
+							maxFour = -1;
+						}
+						else
+						{
+							maxFour = 0.1*a[pair<int,int>(xCoord, yCoord-1)].policy.second;
+						}
+					}
+					double maxThree = 0.7 * f.reward;
+					double maxNum = maxFirst + maxSecond + maxThree + maxFour;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst)
+					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour)
 					{
 						g.policy = make_pair(EAST, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst)
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2) 
 					{
 						g.policy = make_pair(SOUTH, eq);
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond)
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
+					{
+						if(maxThree > maxFirst && maxThree > maxFour)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+						else if(maxFirst > maxThree && maxFirst > maxFour)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
+						else if(maxFour > maxThree && maxFour > maxFirst)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
+					}
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
 					{
 						g.policy = make_pair(NORTH, eq);
 					}
-					else 
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
+					{
+						if(maxThree > maxSecond && maxThree > maxFour)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+						else if(maxSecond > maxThree && maxSecond > maxFour)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+						else if(maxFour > maxThree && maxFour > maxSecond)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
+					}
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
+					{
+						g.policy = make_pair(WEST, eq);
+					}
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
+					{
+						if(maxThree > maxSecond && maxThree > maxFirst)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+						else if(maxSecond > maxThree && maxSecond > maxFirst)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+						else if(maxFirst > maxThree && maxFirst > maxSecond)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
+					}
+					else
 					{
 						g.policy = make_pair(EAST, eq);
 					}
@@ -742,16 +929,21 @@ int main(int argc, char ** argv)
 				{
 					double maxFirst = 0.0;
 					double maxSecond = 0.0;
+					double maxFour = 0.0;
+					bool wall1 = false;
+					bool wall2 = false;
+					bool wall4 = false;
 					if(xCoord == 0)
 					{
-						maxFirst = -4; 
+						maxFirst = -1; 
+						wall1 = true;
 					}
 					else 
 					{
 						GridCell h = a[pair<int, int>(xCoord-1, yCoord)];
 						if(h.type == GridCell::OBSTACLE)
 						{
-							maxFirst = -4;
+							maxFirst = -1;
 						}
 						else
 						{
@@ -760,62 +952,117 @@ int main(int argc, char ** argv)
 					}
 					if(xCoord == (n-1))
 					{
-						maxSecond = -4; 
+						maxSecond = -1; 
+						wall2 = true;
 					}
 					else
 					{
 						GridCell h = a[pair<int,int>(xCoord+1, yCoord)];
 						if(h.type == GridCell::OBSTACLE)
 						{
-							maxSecond = -4;
+							maxSecond = -1;
 						}
 						else
 						{
 							maxSecond = 0.1*a[pair<int,int>(xCoord+1, yCoord)].policy.second;
 						}
 					}
-					double maxThree = 0.8 * f.reward;
-					double maxNum = maxFirst + maxSecond + maxThree;
+					if(yCoord == 0)
+					{
+						maxFour = -1;
+						wall4 = true;
+					}
+					else
+					{
+						GridCell h = a[pair<int, int>(xCoord, yCoord-1)];
+						if(h.type == GridCell::OBSTACLE)
+						{
+							maxFour = -1;
+						}
+						else
+						{
+							maxFour = 0.1*a[pair<int,int>(xCoord, yCoord-1)].policy.second;
+						}
+					}
+					double maxThree = 0.7 * f.policy.second;
+					double maxNum = maxFirst + maxSecond + maxThree + maxFour;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst)
+					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour)
 					{
 						g.policy = make_pair(EAST, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst)
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2) 
 					{
 						g.policy = make_pair(SOUTH, eq);
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond)
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
+					{
+						if(maxThree > maxFirst && maxThree > maxFour)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+						else if(maxFirst > maxThree && maxFirst > maxFour)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
+						else if(maxFour > maxThree && maxFour > maxFirst)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
+					}
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
 					{
 						g.policy = make_pair(NORTH, eq);
 					}
-					/*else
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
+					{
+						if(maxThree > maxSecond && maxThree > maxFour)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+						else if(maxSecond > maxThree && maxSecond > maxFour)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+						else if(maxFour > maxThree && maxFour > maxSecond)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
+					}
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
 					{
 						g.policy = make_pair(WEST, eq);
-					}*/
+					}
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
+					{
+						if(maxThree > maxSecond && maxThree > maxFirst)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+						else if(maxSecond > maxThree && maxSecond > maxFirst)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+						else if(maxFirst > maxThree && maxFirst > maxSecond)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
+					}
+					else
+					{
+						g.policy = make_pair(EAST, eq);
+					}
 					a[pair<int, int>(xCoord, yCoord)] = g;
 					yCoord = yCoord + 1;
 					a[pair<int, int>(xCoord, yCoord)] = f;
 					g = a[pair<int, int>(xCoord, yCoord)];
+					rerollWorld++;
 					goto Randomize;
 				}
 			}
 			else if(randDirection == 3)
 			{
-				NumberThree:
-				/*if(g.policy.first == NORTH)
-				{
-					goto NumberOne;
-				}
-				else if(g.policy.first == EAST)
-				{
-					goto NumberTwo;
-				}
-				else if(g.policy.first == WEST)
-				{
-					goto NumberFour;
-				}*/
 				if(xCoord == (n-1))
 				{
 					goto Randomize;
@@ -829,16 +1076,21 @@ int main(int argc, char ** argv)
 				{
 					double maxFirst = 0.0; 
 					double maxSecond = 0.0;
+					double maxFour = 0.0;
+					bool wall1 = false;
+					bool wall2 = false;
+					bool wall4 = false;
 					if(yCoord == 0)
 					{
-						maxFirst = -4; 
+						maxFirst = -1; 
+						wall1 = true;
 					}
 					else 
 					{
 						GridCell h = a[pair<int, int>(xCoord, yCoord-1)];
 						if(h.type == GridCell::OBSTACLE)
 						{
-							maxFirst = -4;
+							maxFirst = -1;
 						}
 						else
 						{
@@ -847,35 +1099,102 @@ int main(int argc, char ** argv)
 					}
 					if(yCoord == (n-1))
 					{
-						maxSecond = -4; 
+						maxSecond = -1; 
+						wall2 = true;
 					}
 					else
 					{
 						GridCell h = a[pair<int,int>(xCoord, yCoord+1)];
 						if(h.type == GridCell::OBSTACLE)
 						{
-							maxSecond = -4;
+							maxSecond = -1;
 						}
 						else
 						{
 							maxSecond = 0.1*a[pair<int,int>(xCoord, yCoord+1)].policy.second;
 						}
 					}
-					double maxThree = 0.8 * f.reward;
-					double maxNum = maxFirst + maxSecond + maxThree;
+					if(xCoord == 0)
+					{
+						maxFour = -1;
+						wall4 = true;
+					}
+					else
+					{
+						GridCell h = a[pair<int,int>(xCoord-1, yCoord)];
+						if(h.type == GridCell::OBSTACLE)
+						{
+							maxFour = -1;
+						}
+						else
+						{
+							maxFour = 0.1*a[pair<int,int>(xCoord-1,yCoord)].policy.second;
+						}
+					}
+					double maxThree = 0.7 * f.reward;
+					double maxNum = maxFirst + maxSecond + maxThree + maxFour;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst)
+					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour)
 					{
-						g.policy = make_pair(SOUTH, eq);	
+						g.policy = make_pair(SOUTH, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst)
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2) 
 					{
 						g.policy = make_pair(EAST, eq);
 					}
-					else if(maxFirst > maxSecond && maxFirst > maxThree)
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
+					{
+						if(maxThree > maxFirst && maxThree > maxFour)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+						else if(maxFirst > maxThree && maxFirst > maxFour)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
+						else if(maxFour > maxThree && maxFour > maxFirst)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
+					}
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
+					{
+						g.policy = make_pair(NORTH, eq);
+					}
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
+					{
+						if(maxThree > maxSecond && maxThree > maxFour)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+						else if(maxSecond > maxThree && maxSecond > maxFour)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+						else if(maxFour > maxThree && maxFour > maxSecond)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
+					}
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
 					{
 						g.policy = make_pair(WEST, eq);
+					}
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
+					{
+						if(maxThree > maxSecond && maxThree > maxFirst)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+						else if(maxSecond > maxThree && maxSecond > maxFirst)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+						else if(maxFirst > maxThree && maxFirst > maxSecond)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
 					}
 					else
 					{
@@ -889,16 +1208,21 @@ int main(int argc, char ** argv)
 				{
 					double maxFirst = 0.0; 
 					double maxSecond = 0.0;
+					double maxFour = 0.0;
+					bool wall1 = false;
+					bool wall2 = false;
+					bool wall4 = false;
 					if(yCoord == 0)
 					{
-						maxFirst = -4; 
+						maxFirst = -1; 
+						wall1 = true;
 					}
 					else 
 					{
 						GridCell h = a[pair<int, int>(xCoord, yCoord-1)];
 						if(h.type == GridCell::OBSTACLE)
 						{
-							maxFirst = -4;
+							maxFirst = -1;
 						}
 						else
 						{
@@ -907,62 +1231,117 @@ int main(int argc, char ** argv)
 					}
 					if(yCoord == (n-1))
 					{
-						maxSecond = -4; 
+						maxSecond = -1; 
+						wall2 = true;
 					}
 					else
 					{
 						GridCell h = a[pair<int,int>(xCoord, yCoord+1)];
 						if(h.type == GridCell::OBSTACLE)
 						{
-							maxSecond = -4;
+							maxSecond = -1;
 						}
 						else
 						{
 							maxSecond = 0.1*a[pair<int,int>(xCoord, yCoord+1)].policy.second;
 						}
 					}
-					double maxThree = 0.8 * f.reward;
-					double maxNum = maxFirst + maxSecond + maxThree;
+					if(xCoord == 0)
+					{
+						maxFour = -1;
+						wall4 = true;
+					}
+					else
+					{
+						GridCell h = a[pair<int,int>(xCoord-1, yCoord)];
+						if(h.type == GridCell::OBSTACLE)
+						{
+							maxFour = -1;
+						}
+						else
+						{
+							maxFour = 0.1*a[pair<int,int>(xCoord-1,yCoord)].policy.second;
+						}
+					}
+					double maxThree = 0.7 * f.policy.second;
+					double maxNum = maxFirst + maxSecond + maxThree + maxFour;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward + ((0.9*maxNum) - g.policy.second));		
-					if(maxThree > maxSecond && maxThree > maxFirst)
+					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour)
 					{
-						g.policy = make_pair(SOUTH, eq);	
+						g.policy = make_pair(SOUTH, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst)
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2) 
 					{
 						g.policy = make_pair(EAST, eq);
 					}
-					else if(maxFirst > maxSecond && maxFirst > maxThree)
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
+					{
+						if(maxThree > maxFirst && maxThree > maxFour)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+						else if(maxFirst > maxThree && maxFirst > maxFour)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
+						else if(maxFour > maxThree && maxFour > maxFirst)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
+					}
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
+					{
+						g.policy = make_pair(NORTH, eq);
+					}
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
+					{
+						if(maxThree > maxSecond && maxThree > maxFour)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+						else if(maxSecond > maxThree && maxSecond > maxFour)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+						else if(maxFour > maxThree && maxFour > maxSecond)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
+					}
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
 					{
 						g.policy = make_pair(WEST, eq);
 					}
-					/*else
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
 					{
-						g.policy = make_pair(NORTH, eq);
-					}*/
+						if(maxThree > maxSecond && maxThree > maxFirst)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+						else if(maxSecond > maxThree && maxSecond > maxFirst)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+						else if(maxFirst > maxThree && maxFirst > maxSecond)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
+					}
+					else
+					{
+						g.policy = make_pair(SOUTH, eq);
+					}
 					a[pair<int, int>(xCoord, yCoord)] = g;
 					xCoord = xCoord + 1;
 					a[pair<int, int>(xCoord, yCoord)] = f;
 					g = a[pair<int, int>(xCoord, yCoord)];
+					rerollWorld++;
 					goto Randomize;
 				}
 			}
 			else if(randDirection == 4)
 			{
-				NumberFour:
-				/*if(g.policy.first == NORTH)
-				{
-					goto NumberOne;
-				}
-				else if(g.policy.first == EAST)
-				{
-					goto NumberTwo;
-				}
-				else if(g.policy.first == SOUTH)
-				{
-					goto NumberThree;
-				}*/
 				if(yCoord == 0)
 				{
 					goto Randomize;
@@ -976,16 +1355,21 @@ int main(int argc, char ** argv)
 				{
 					double maxFirst = 0.0;
 					double maxSecond = 0.0;
+					double maxFour = 0.0;
+					bool wall1 = false;
+					bool wall2 = false;
+					bool wall4 = false;
 					if(xCoord == 0)
 					{
-						maxFirst = -4; 
+						maxFirst = -1; 
+						wall1 = true;
 					}
 					else 
 					{
 						GridCell h = a[pair<int, int>(xCoord-1, yCoord)];
 						if(h.type == GridCell::OBSTACLE)
 						{
-							maxFirst = -4;
+							maxFirst = -1;
 						}
 						else
 						{
@@ -994,35 +1378,102 @@ int main(int argc, char ** argv)
 					}
 					if(xCoord == (n-1))
 					{
-						maxSecond = -4; 
+						maxSecond = -1; 
+						wall2 = true;
 					}
 					else
 					{
 						GridCell h = a[pair<int,int>(xCoord+1, yCoord)];
 						if(h.type == GridCell::OBSTACLE)
 						{
-							maxSecond = -4;
+							maxSecond = -1;
 						}
 						else
 						{
 							maxSecond = 0.1*a[pair<int,int>(xCoord+1, yCoord)].policy.second;
 						}
 					}
-					double maxThree = 0.8 * f.reward;
-					double maxNum = maxFirst + maxSecond + maxThree;
+					if(yCoord == (n-1))
+					{
+						maxFour = -1;
+						wall4 = true;
+					}
+					else
+					{
+						GridCell h = a[pair<int,int>(xCoord, yCoord+1)];
+						if(h.type == GridCell::OBSTACLE)
+						{
+							maxFour = -1;
+						}
+						else
+						{	
+							maxFour = 0.1*a[pair<int,int>(xCoord, yCoord+1)].policy.second;
+						}
+					}
+					double maxThree = 0.7 * f.reward;
+					double maxNum = maxFirst + maxSecond + maxThree + maxFour;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst)
+					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour)
 					{
 						g.policy = make_pair(WEST, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst)
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2) 
 					{
 						g.policy = make_pair(SOUTH, eq);
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond)
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
+					{
+						if(maxThree > maxFirst && maxThree > maxFour)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
+						else if(maxFirst > maxThree && maxFirst > maxFour)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
+						else if(maxFour > maxThree && maxFour > maxFirst)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+					}
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
 					{
 						g.policy = make_pair(NORTH, eq);
+					}
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
+					{
+						if(maxThree > maxSecond && maxThree > maxFour)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
+						else if(maxSecond > maxThree && maxSecond > maxFour)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+						else if(maxFour > maxThree && maxFour > maxSecond)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+					}
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
+					{
+						g.policy = make_pair(EAST, eq);
+					}
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
+					{
+						if(maxThree > maxSecond && maxThree > maxFirst)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
+						else if(maxSecond > maxThree && maxSecond > maxFirst)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+						else if(maxFirst > maxThree && maxFirst > maxSecond)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
 					}
 					else
 					{
@@ -1036,16 +1487,21 @@ int main(int argc, char ** argv)
 				{
 					double maxFirst = 0.0;
 					double maxSecond = 0.0;
+					double maxFour = 0.0;
+					bool wall1 = false;
+					bool wall2 = false;
+					bool wall4 = false;
 					if(xCoord == 0)
 					{
-						maxFirst = -4; 
+						maxFirst = -1; 
+						wall1 = true;
 					}
 					else 
 					{
 						GridCell h = a[pair<int, int>(xCoord-1, yCoord)];
 						if(h.type == GridCell::OBSTACLE)
 						{
-							maxFirst = -4;
+							maxFirst = -1;
 						}
 						else
 						{
@@ -1054,54 +1510,121 @@ int main(int argc, char ** argv)
 					}
 					if(xCoord == (n-1))
 					{
-						maxSecond = -4; 
+						maxSecond = -1; 
+						wall2 = true;
 					}
 					else
 					{
 						GridCell h = a[pair<int,int>(xCoord+1, yCoord)];
 						if(h.type == GridCell::OBSTACLE)
 						{
-							maxSecond = -4;
+							maxSecond = -1;
 						}
 						else
 						{
 							maxSecond = 0.1*a[pair<int,int>(xCoord+1, yCoord)].policy.second;
 						}
 					}
-					double maxThree = 0.8 * f.reward;
-					double maxNum = maxFirst + maxSecond + maxThree;
+					if(yCoord == (n-1))
+					{
+						maxFour = -1;
+						wall4 = true;
+					}
+					else
+					{
+						GridCell h = a[pair<int,int>(xCoord, yCoord+1)];
+						if(h.type == GridCell::OBSTACLE)
+						{
+							maxFour = -1;
+						}
+						else
+						{	
+							maxFour = 0.1*a[pair<int,int>(xCoord, yCoord+1)].policy.second;
+						}
+					}
+					double maxThree = 0.7 * f.policy.second;
+					double maxNum = maxFirst + maxSecond + maxThree + maxFour;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst)
+					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour)
 					{
 						g.policy = make_pair(WEST, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst)
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2) 
 					{
 						g.policy = make_pair(SOUTH, eq);
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond)
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
+					{
+						if(maxThree > maxFirst && maxThree > maxFour)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
+						else if(maxFirst > maxThree && maxFirst > maxFour)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
+						else if(maxFour > maxThree && maxFour > maxFirst)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+					}
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
 					{
 						g.policy = make_pair(NORTH, eq);
 					}
-					/*else
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
+					{
+						if(maxThree > maxSecond && maxThree > maxFour)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
+						else if(maxSecond > maxThree && maxSecond > maxFour)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+						else if(maxFour > maxThree && maxFour > maxSecond)
+						{
+							g.policy = make_pair(EAST, eq);
+						}
+					}
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
 					{
 						g.policy = make_pair(EAST, eq);
-					}*/
+					}
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
+					{
+						if(maxThree > maxSecond && maxThree > maxFirst)
+						{
+							g.policy = make_pair(WEST, eq);
+						}
+						else if(maxSecond > maxThree && maxSecond > maxFirst)
+						{
+							g.policy = make_pair(SOUTH, eq);
+						}
+						else if(maxFirst > maxThree && maxFirst > maxSecond)
+						{
+							g.policy = make_pair(NORTH, eq);
+						}
+					}
+					else
+					{
+						g.policy = make_pair(WEST, eq);
+					}
 					a[pair<int, int>(xCoord, yCoord)] = g;
 					yCoord = yCoord - 1;
 					a[pair<int, int>(xCoord, yCoord)] = f;
 					g = a[pair<int, int>(xCoord, yCoord)];
+					rerollWorld++;
 					goto Randomize;
 				}
 			}
-			a.print(make_pair(startX, startY));
 		}
 		a.print(make_pair(startX, startY));
 		//cout << a.getBounds().first << " " << a.getBounds().second << endl;
 		//cout << a.getRows() << " " << a.getCols() << endl;
 		//cout << a.getStartLocation().first << " " << a.getStartLocation().second << endl;
-		/*cout << "Rewards: " << endl;  // Testing Purposes
+		/*cout << "Rewards: " << endl;  	// Testing Purposes
 		for(unsigned int i = 0; i < m; i++)
 		{
 			cout << randRewardX[i] << " " << randRewardY[i] << endl;

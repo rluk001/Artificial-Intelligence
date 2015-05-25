@@ -498,15 +498,27 @@ int main(int argc, char ** argv)
 			unsigned int randDirection = 1;//(rand() % 4) + 1;
 			if(randDirection == 1)
 			{
+				NumberOne:
+				if(g.policy.first == WEST)
+				{
+					goto NumberFour;
+				}
+				else if(g.policy.first == EAST)
+				{
+					goto NumberTwo;
+				}
+				else if(g.policy.first == SOUTH)
+				{
+					goto NumberThree;
+				}
 				if(xCoord == 0)
 				{
 					goto NumberTwo;
 				}
 				f = a[pair<int, int> (xCoord-1, yCoord)];
-				g.policy = make_pair(NORTH, 0.0);
 				if(f.type == GridCell::OBSTACLE)
 				{
-					goto NumberTwo;
+					goto Randomize;
 				}
 				else if(f.type == GridCell::TERMINAL)
 				{
@@ -575,23 +587,41 @@ int main(int argc, char ** argv)
 						g.policy = make_pair(NORTH, eq);
 					}
 					a[pair<int, int>(xCoord, yCoord)] = g;
-					g = a[pair<int,int>(xCoord-1, yCoord)];
+					xCoord = xCoord - 1;
+					g = a[pair<int,int>(xCoord, yCoord)];
 					goto Randomize;
 				}
 			}
 			else if(randDirection == 2)
 			{
 				NumberTwo:
-				;	
+				if(xCoord == n)
+				{
+					goto NumberThree;
+				}
+				f = a[pair<int,int>(xCoord, yCoord+1)];
+				if(f.type == GridCell::OBSTACLE)
+				{
+					goto NumberThree;
+				}
+				else if(f.type == GridCell::TERMINAL)
+				{
+					double maxFirst = 0.1*a[pair<int,int>(xCoord-1, yCoord)].policy.second;
+					double maxSecond = 0.1*a[pair<int,int>(xCoord+1, yCoord)].policy.second;
+					if(xCoord == 0)
+					{
+						
+					}
+				}
 			}
 			else if(randDirection == 3)
 			{
-				GridCell g = a[a.getStartLocation()];
+				NumberThree:
 
 			}
 			else if(randDirection == 4)
 			{
-				GridCell g = a[a.getStartLocation()];
+				NumberFour:
 			}
 		}
 		//a.print(make_pair(startX, startY));

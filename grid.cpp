@@ -501,7 +501,7 @@ int main(int argc, char ** argv)
 			unsigned rerollWorld = 0;
 			iteration = 1 + i;
 			Randomize:
-			unsigned int randDirection = (rand() % 4) + 1;
+			unsigned int randDirection = (rand() % 4) + 1; // Decided to randomize directions throughout each step
 			if(rerollWorld >= 10000)
 			{
 				cout << "No Possible Values - Start again to remake world!!!" << endl;
@@ -520,7 +520,7 @@ int main(int argc, char ** argv)
 				{
 					goto Randomize;
 				}
-				else if(f.type == GridCell::TERMINAL)
+				else if(f.type == GridCell::TERMINAL) // Terminal for NORTH
 				{
 					double maxFirst = 0.0; 
 					double maxSecond = 0.0; 
@@ -746,7 +746,7 @@ int main(int argc, char ** argv)
 					a[pair<int, int>(xCoord-1, yCoord)] = f;
 					continue;
 				}
-				else if(f.type == GridCell::BLANK)
+				else if(f.type == GridCell::BLANK) // Blank State for NORTH
 				{
 					double maxFirst = 0.0; 
 					double maxSecond = 0.0; 
@@ -983,7 +983,7 @@ int main(int argc, char ** argv)
 				{
 					goto Randomize;
 				}
-				else if(f.type == GridCell::TERMINAL)
+				else if(f.type == GridCell::TERMINAL) // Terminal for EAST
 				{
 					double maxFirst = 0.0;
 					double maxSecond = 0.0;
@@ -1209,7 +1209,7 @@ int main(int argc, char ** argv)
 					a[pair<int, int>(xCoord, yCoord+1)] = f;
 					continue;
 				}
-				else if(f.type == GridCell::BLANK)
+				else if(f.type == GridCell::BLANK) // Blank state for EAST
 				{
 					double maxFirst = 0.0;
 					double maxSecond = 0.0;
@@ -1446,7 +1446,7 @@ int main(int argc, char ** argv)
 				{
 					goto Randomize;
 				}	
-				else if(f.type == GridCell::TERMINAL)
+				else if(f.type == GridCell::TERMINAL) // Terminal State for SOUTH
 				{
 					double maxFirst = 0.0; 
 					double maxSecond = 0.0;
@@ -1672,7 +1672,7 @@ int main(int argc, char ** argv)
 					a[pair<int, int>(xCoord+1, yCoord)] = f;
 					continue;
 				}
-				else if(f.type == GridCell::BLANK)
+				else if(f.type == GridCell::BLANK) // Blank state for SOUTH
 				{
 					double maxFirst = 0.0; 
 					double maxSecond = 0.0;
@@ -1909,7 +1909,7 @@ int main(int argc, char ** argv)
 				{
 					goto Randomize;
 				}
-				else if(f.type == GridCell::TERMINAL)
+				else if(f.type == GridCell::TERMINAL) // Terminal state for WEST
 				{
 					double maxFirst = 0.0;
 					double maxSecond = 0.0;
@@ -2135,7 +2135,7 @@ int main(int argc, char ** argv)
 					a[pair<int, int>(xCoord, yCoord-1)] = f;
 					continue;
 				}
-				else if(f.type == GridCell::BLANK)
+				else if(f.type == GridCell::BLANK) // Blank state for WEST
 				{
 					double maxFirst = 0.0;
 					double maxSecond = 0.0;

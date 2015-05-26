@@ -581,7 +581,7 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree + maxFour; 
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward + ((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour)
+					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour && !wall1 && !wall2 && !wall4)
 					{
 						g.policy = make_pair(NORTH, eq);
 					}
@@ -591,17 +591,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
 					{
-						if(maxThree > maxFirst && maxThree > maxFour)
+						if(wall1 && wall4)
 						{
 							g.policy = make_pair(NORTH, eq);
 						}
-						else if(maxFirst > maxThree && maxFirst > maxFour)
-						{
-							g.policy = make_pair(WEST, eq);
+						else if(wall1 && !wall4)
+						{	
+							if(maxThree > maxFour)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxFour > maxThree)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
 						}
-						else if(maxFour > maxThree && maxFour > maxFirst)
+						else if(!wall1 && wall4)
 						{
-							g.policy = make_pair(SOUTH, eq);
+							if(maxFirst > maxThree)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxThree > maxFirst)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+						}
+						else if(!wall1 && !wall4)
+						{
+							if(maxThree > maxFirst && maxThree > maxFour)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxFirst > maxThree && maxFirst > maxFour)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxFour > maxThree && maxFour > maxFirst)
+							{	
+								g.policy = make_pair(SOUTH, eq);
+							}
 						}
 					}
 					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
@@ -610,17 +639,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
 					{
-						if(maxThree > maxSecond && maxThree > maxFour)
+						if(wall2 && wall4)
 						{
 							g.policy = make_pair(NORTH, eq);
 						}
-						else if(maxSecond > maxThree && maxSecond > maxFour)
-						{
-							g.policy = make_pair(EAST, eq);
+						else if(wall2 && !wall4)
+						{	
+							if(maxThree > maxFour)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxFour > maxThree)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
 						}
-						else if(maxFour > maxThree && maxFour > maxSecond)
+						else if(!wall2 && wall4)
 						{
-							g.policy = make_pair(SOUTH, eq);
+							if(maxSecond > maxThree)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxThree > maxSecond)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+						}
+						else if(!wall2 && !wall4)
+						{
+							if(maxThree > maxSecond && maxThree > maxFour)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxSecond > maxThree && maxSecond > maxFour)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxFour > maxThree && maxFour > maxSecond)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
 						}
 					}
 					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
@@ -629,17 +687,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
 					{
-						if(maxThree > maxSecond && maxThree > maxFirst)
+						if(wall1 && wall2)
 						{
 							g.policy = make_pair(NORTH, eq);
 						}
-						else if(maxSecond > maxThree && maxSecond > maxFirst)
-						{
-							g.policy = make_pair(EAST, eq);
+						else if(wall1 && !wall2)
+						{	
+							if(maxThree > maxSecond)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxSecond > maxThree)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
 						}
-						else if(maxFirst > maxThree && maxFirst > maxSecond)
+						else if(!wall1 && wall2)
 						{
-							g.policy = make_pair(WEST, eq);
+							if(maxFirst > maxThree)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxThree > maxFirst)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+						}
+						else if(!wall2 && !wall4)
+						{
+							if(maxThree > maxSecond && maxThree > maxFirst)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxSecond > maxThree && maxSecond > maxFirst)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxFirst > maxThree && maxFirst > maxSecond)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
 						}
 					}
 					else
@@ -716,7 +803,7 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree + maxFour; 
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward + ((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour)
+					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour && !wall1 && !wall2 && !wall4)
 					{
 						g.policy = make_pair(NORTH, eq);
 					}
@@ -726,17 +813,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
 					{
-						if(maxThree > maxFirst && maxThree > maxFour)
+						if(wall1 && wall4)
 						{
 							g.policy = make_pair(NORTH, eq);
 						}
-						else if(maxFirst > maxThree && maxFirst > maxFour)
-						{
-							g.policy = make_pair(WEST, eq);
+						else if(wall1 && !wall4)
+						{	
+							if(maxThree > maxFour)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxFour > maxThree)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
 						}
-						else if(maxFour > maxThree && maxFour > maxFirst)
+						else if(!wall1 && wall4)
 						{
-							g.policy = make_pair(SOUTH, eq);
+							if(maxFirst > maxThree)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxThree > maxFirst)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+						}
+						else if(!wall1 && !wall4)
+						{
+							if(maxThree > maxFirst && maxThree > maxFour)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxFirst > maxThree && maxFirst > maxFour)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxFour > maxThree && maxFour > maxFirst)
+							{	
+								g.policy = make_pair(SOUTH, eq);
+							}
 						}
 					}
 					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
@@ -745,17 +861,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
 					{
-						if(maxThree > maxSecond && maxThree > maxFour)
+						if(wall2 && wall4)
 						{
 							g.policy = make_pair(NORTH, eq);
 						}
-						else if(maxSecond > maxThree && maxSecond > maxFour)
-						{
-							g.policy = make_pair(EAST, eq);
+						else if(wall2 && !wall4)
+						{	
+							if(maxThree > maxFour)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxFour > maxThree)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
 						}
-						else if(maxFour > maxThree && maxFour > maxSecond)
+						else if(!wall2 && wall4)
 						{
-							g.policy = make_pair(SOUTH, eq);
+							if(maxSecond > maxThree)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxThree > maxSecond)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+						}
+						else if(!wall2 && !wall4)
+						{
+							if(maxThree > maxSecond && maxThree > maxFour)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxSecond > maxThree && maxSecond > maxFour)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxFour > maxThree && maxFour > maxSecond)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
 						}
 					}
 					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
@@ -764,17 +909,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
 					{
-						if(maxThree > maxSecond && maxThree > maxFirst)
+						if(wall1 && wall2)
 						{
 							g.policy = make_pair(NORTH, eq);
 						}
-						else if(maxSecond > maxThree && maxSecond > maxFirst)
-						{
-							g.policy = make_pair(EAST, eq);
+						else if(wall1 && !wall2)
+						{	
+							if(maxThree > maxSecond)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxSecond > maxThree)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
 						}
-						else if(maxFirst > maxThree && maxFirst > maxSecond)
+						else if(!wall1 && wall2)
 						{
-							g.policy = make_pair(WEST, eq);
+							if(maxFirst > maxThree)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxThree > maxFirst)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+						}
+						else if(!wall2 && !wall4)
+						{
+							if(maxThree > maxSecond && maxThree > maxFirst)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxSecond > maxThree && maxSecond > maxFirst)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxFirst > maxThree && maxFirst > maxSecond)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
 						}
 					}
 					else
@@ -866,7 +1040,7 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree + maxFour;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour)
+					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour && !wall1 && !wall2 && !wall4)
 					{
 						g.policy = make_pair(EAST, eq);
 					}
@@ -876,17 +1050,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
 					{
-						if(maxThree > maxFirst && maxThree > maxFour)
+						if(wall1 && wall4)
 						{
 							g.policy = make_pair(EAST, eq);
 						}
-						else if(maxFirst > maxThree && maxFirst > maxFour)
-						{
-							g.policy = make_pair(NORTH, eq);
+						else if(wall1 && !wall4)
+						{	
+							if(maxThree > maxFour)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxFour > maxThree)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
 						}
-						else if(maxFour > maxThree && maxFour > maxFirst)
+						else if(!wall1 && wall4)
 						{
-							g.policy = make_pair(WEST, eq);
+							if(maxFirst > maxThree)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxThree > maxFirst)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+						}
+						else if(!wall1 && !wall4)
+						{
+							if(maxThree > maxFirst && maxThree > maxFour)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxFirst > maxThree && maxFirst > maxFour)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxFour > maxThree && maxFour > maxFirst)
+							{	
+								g.policy = make_pair(WEST, eq);
+							}
 						}
 					}
 					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
@@ -895,17 +1098,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
 					{
-						if(maxThree > maxSecond && maxThree > maxFour)
+						if(wall2 && wall4)
 						{
 							g.policy = make_pair(EAST, eq);
 						}
-						else if(maxSecond > maxThree && maxSecond > maxFour)
-						{
-							g.policy = make_pair(SOUTH, eq);
+						else if(wall2 && !wall4)
+						{	
+							if(maxThree > maxFour)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxFour > maxThree)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
 						}
-						else if(maxFour > maxThree && maxFour > maxSecond)
+						else if(!wall2 && wall4)
 						{
-							g.policy = make_pair(WEST, eq);
+							if(maxSecond > maxThree)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxThree > maxSecond)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+						}
+						else if(!wall2 && !wall4)
+						{
+							if(maxThree > maxSecond && maxThree > maxFour)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxSecond > maxThree && maxSecond > maxFour)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxFour > maxThree && maxFour > maxSecond)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
 						}
 					}
 					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
@@ -914,17 +1146,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
 					{
-						if(maxThree > maxSecond && maxThree > maxFirst)
+						if(wall1 && wall2)
 						{
 							g.policy = make_pair(EAST, eq);
 						}
-						else if(maxSecond > maxThree && maxSecond > maxFirst)
-						{
-							g.policy = make_pair(SOUTH, eq);
+						else if(wall1 && !wall2)
+						{	
+							if(maxThree > maxSecond)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxSecond > maxThree)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
 						}
-						else if(maxFirst > maxThree && maxFirst > maxSecond)
+						else if(!wall1 && wall2)
 						{
-							g.policy = make_pair(NORTH, eq);
+							if(maxFirst > maxThree)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxThree > maxFirst)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+						}
+						else if(!wall2 && !wall4)
+						{
+							if(maxThree > maxSecond && maxThree > maxFirst)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxSecond > maxThree && maxSecond > maxFirst)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxFirst > maxThree && maxFirst > maxSecond)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
 						}
 					}
 					else
@@ -1001,7 +1262,7 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree + maxFour;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour)
+					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour && !wall1 && !wall2 && !wall4)
 					{
 						g.policy = make_pair(EAST, eq);
 					}
@@ -1011,17 +1272,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
 					{
-						if(maxThree > maxFirst && maxThree > maxFour)
+						if(wall1 && wall4)
 						{
 							g.policy = make_pair(EAST, eq);
 						}
-						else if(maxFirst > maxThree && maxFirst > maxFour)
-						{
-							g.policy = make_pair(NORTH, eq);
+						else if(wall1 && !wall4)
+						{	
+							if(maxThree > maxFour)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxFour > maxThree)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
 						}
-						else if(maxFour > maxThree && maxFour > maxFirst)
+						else if(!wall1 && wall4)
 						{
-							g.policy = make_pair(WEST, eq);
+							if(maxFirst > maxThree)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxThree > maxFirst)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+						}
+						else if(!wall1 && !wall4)
+						{
+							if(maxThree > maxFirst && maxThree > maxFour)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxFirst > maxThree && maxFirst > maxFour)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxFour > maxThree && maxFour > maxFirst)
+							{	
+								g.policy = make_pair(WEST, eq);
+							}
 						}
 					}
 					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
@@ -1030,17 +1320,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
 					{
-						if(maxThree > maxSecond && maxThree > maxFour)
+						if(wall2 && wall4)
 						{
 							g.policy = make_pair(EAST, eq);
 						}
-						else if(maxSecond > maxThree && maxSecond > maxFour)
-						{
-							g.policy = make_pair(SOUTH, eq);
+						else if(wall2 && !wall4)
+						{	
+							if(maxThree > maxFour)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxFour > maxThree)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
 						}
-						else if(maxFour > maxThree && maxFour > maxSecond)
+						else if(!wall2 && wall4)
 						{
-							g.policy = make_pair(WEST, eq);
+							if(maxSecond > maxThree)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxThree > maxSecond)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+						}
+						else if(!wall2 && !wall4)
+						{
+							if(maxThree > maxSecond && maxThree > maxFour)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxSecond > maxThree && maxSecond > maxFour)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxFour > maxThree && maxFour > maxSecond)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
 						}
 					}
 					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
@@ -1049,17 +1368,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
 					{
-						if(maxThree > maxSecond && maxThree > maxFirst)
+						if(wall1 && wall2)
 						{
 							g.policy = make_pair(EAST, eq);
 						}
-						else if(maxSecond > maxThree && maxSecond > maxFirst)
-						{
-							g.policy = make_pair(SOUTH, eq);
+						else if(wall1 && !wall2)
+						{	
+							if(maxThree > maxSecond)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxSecond > maxThree)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
 						}
-						else if(maxFirst > maxThree && maxFirst > maxSecond)
+						else if(!wall1 && wall2)
 						{
-							g.policy = make_pair(NORTH, eq);
+							if(maxFirst > maxThree)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxThree > maxFirst)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+						}
+						else if(!wall2 && !wall4)
+						{
+							if(maxThree > maxSecond && maxThree > maxFirst)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxSecond > maxThree && maxSecond > maxFirst)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxFirst > maxThree && maxFirst > maxSecond)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
 						}
 					}
 					else
@@ -1151,7 +1499,7 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree + maxFour;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour)
+					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour && !wall1 && !wall2 && !wall4)
 					{
 						g.policy = make_pair(SOUTH, eq);
 					}
@@ -1161,55 +1509,142 @@ int main(int argc, char ** argv)
 					}
 					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
 					{
-						if(maxThree > maxFirst && maxThree > maxFour)
+						if(wall1 && wall4)
 						{
 							g.policy = make_pair(SOUTH, eq);
 						}
-						else if(maxFirst > maxThree && maxFirst > maxFour)
-						{
-							g.policy = make_pair(NORTH, eq);
+						else if(wall1 && !wall4)
+						{	
+							if(maxThree > maxFour)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxFour > maxThree)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
 						}
-						else if(maxFour > maxThree && maxFour > maxFirst)
+						else if(!wall1 && wall4)
 						{
-							g.policy = make_pair(WEST, eq);
+							if(maxFirst > maxThree)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxThree > maxFirst)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+						}
+						else if(!wall1 && !wall4)
+						{
+							if(maxThree > maxFirst && maxThree > maxFour)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxFirst > maxThree && maxFirst > maxFour)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxFour > maxThree && maxFour > maxFirst)
+							{	
+								g.policy = make_pair(NORTH, eq);
+							}
 						}
 					}
 					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
 					{
-						g.policy = make_pair(NORTH, eq);
+						g.policy = make_pair(WEST, eq);
 					}
 					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
 					{
-						if(maxThree > maxSecond && maxThree > maxFour)
+						if(wall2 && wall4)
 						{
 							g.policy = make_pair(SOUTH, eq);
 						}
-						else if(maxSecond > maxThree && maxSecond > maxFour)
-						{
-							g.policy = make_pair(EAST, eq);
+						else if(wall2 && !wall4)
+						{	
+							if(maxThree > maxFour)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxFour > maxThree)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
 						}
-						else if(maxFour > maxThree && maxFour > maxSecond)
+						else if(!wall2 && wall4)
 						{
-							g.policy = make_pair(WEST, eq);
+							if(maxSecond > maxThree)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxThree > maxSecond)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+						}
+						else if(!wall2 && !wall4)
+						{
+							if(maxThree > maxSecond && maxThree > maxFour)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxSecond > maxThree && maxSecond > maxFour)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxFour > maxThree && maxFour > maxSecond)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
 						}
 					}
 					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
 					{
-						g.policy = make_pair(WEST, eq);
+						g.policy = make_pair(NORTH, eq);
 					}
 					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
 					{
-						if(maxThree > maxSecond && maxThree > maxFirst)
+						if(wall1 && wall2)
 						{
 							g.policy = make_pair(SOUTH, eq);
 						}
-						else if(maxSecond > maxThree && maxSecond > maxFirst)
-						{
-							g.policy = make_pair(EAST, eq);
+						else if(wall1 && !wall2)
+						{	
+							if(maxThree > maxSecond)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxSecond > maxThree)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
 						}
-						else if(maxFirst > maxThree && maxFirst > maxSecond)
+						else if(!wall1 && wall2)
 						{
-							g.policy = make_pair(NORTH, eq);
+							if(maxFirst > maxThree)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxThree > maxFirst)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+						}
+						else if(!wall2 && !wall4)
+						{
+							if(maxThree > maxSecond && maxThree > maxFirst)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxSecond > maxThree && maxSecond > maxFirst)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxFirst > maxThree && maxFirst > maxSecond)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
 						}
 					}
 					else
@@ -1286,7 +1721,7 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree + maxFour;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward + ((0.9*maxNum) - g.policy.second));		
-					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour)
+					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour && !wall1 && !wall2 && !wall4)
 					{
 						g.policy = make_pair(SOUTH, eq);
 					}
@@ -1296,61 +1731,148 @@ int main(int argc, char ** argv)
 					}
 					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
 					{
-						if(maxThree > maxFirst && maxThree > maxFour)
+						if(wall1 && wall4)
 						{
 							g.policy = make_pair(SOUTH, eq);
 						}
-						else if(maxFirst > maxThree && maxFirst > maxFour)
-						{
-							g.policy = make_pair(NORTH, eq);
+						else if(wall1 && !wall4)
+						{	
+							if(maxThree > maxFour)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxFour > maxThree)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
 						}
-						else if(maxFour > maxThree && maxFour > maxFirst)
+						else if(!wall1 && wall4)
 						{
-							g.policy = make_pair(WEST, eq);
+							if(maxFirst > maxThree)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxThree > maxFirst)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+						}
+						else if(!wall1 && !wall4)
+						{
+							if(maxThree > maxFirst && maxThree > maxFour)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxFirst > maxThree && maxFirst > maxFour)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxFour > maxThree && maxFour > maxFirst)
+							{	
+								g.policy = make_pair(NORTH, eq);
+							}
 						}
 					}
 					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
 					{
-						g.policy = make_pair(NORTH, eq);
+						g.policy = make_pair(WEST, eq);
 					}
 					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
 					{
-						if(maxThree > maxSecond && maxThree > maxFour)
+						if(wall2 && wall4)
 						{
 							g.policy = make_pair(SOUTH, eq);
 						}
-						else if(maxSecond > maxThree && maxSecond > maxFour)
-						{
-							g.policy = make_pair(EAST, eq);
+						else if(wall2 && !wall4)
+						{	
+							if(maxThree > maxFour)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxFour > maxThree)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
 						}
-						else if(maxFour > maxThree && maxFour > maxSecond)
+						else if(!wall2 && wall4)
 						{
-							g.policy = make_pair(WEST, eq);
+							if(maxSecond > maxThree)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxThree > maxSecond)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+						}
+						else if(!wall2 && !wall4)
+						{
+							if(maxThree > maxSecond && maxThree > maxFour)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxSecond > maxThree && maxSecond > maxFour)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxFour > maxThree && maxFour > maxSecond)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
 						}
 					}
 					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
 					{
-						g.policy = make_pair(WEST, eq);
+						g.policy = make_pair(NORTH, eq);
 					}
 					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
 					{
-						if(maxThree > maxSecond && maxThree > maxFirst)
+						if(wall1 && wall2)
 						{
 							g.policy = make_pair(SOUTH, eq);
 						}
-						else if(maxSecond > maxThree && maxSecond > maxFirst)
-						{
-							g.policy = make_pair(EAST, eq);
+						else if(wall1 && !wall2)
+						{	
+							if(maxThree > maxSecond)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxSecond > maxThree)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
 						}
-						else if(maxFirst > maxThree && maxFirst > maxSecond)
+						else if(!wall1 && wall2)
 						{
-							g.policy = make_pair(NORTH, eq);
+							if(maxFirst > maxThree)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxThree > maxFirst)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+						}
+						else if(!wall2 && !wall4)
+						{
+							if(maxThree > maxSecond && maxThree > maxFirst)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxSecond > maxThree && maxSecond > maxFirst)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
+							else if(maxFirst > maxThree && maxFirst > maxSecond)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
 						}
 					}
-					else
+					/*else
 					{
 						g.policy = make_pair(SOUTH, eq);
-					}
+					}*/
 					a[pair<int, int>(xCoord, yCoord)] = g;
 					xCoord = xCoord + 1;
 					a[pair<int, int>(xCoord, yCoord)] = f;
@@ -1436,7 +1958,7 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree + maxFour;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour)
+					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour && !wall1 && !wall2 && !wall4)
 					{
 						g.policy = make_pair(WEST, eq);
 					}
@@ -1446,17 +1968,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
 					{
-						if(maxThree > maxFirst && maxThree > maxFour)
+						if(wall1 && wall4)
 						{
 							g.policy = make_pair(WEST, eq);
 						}
-						else if(maxFirst > maxThree && maxFirst > maxFour)
-						{
-							g.policy = make_pair(NORTH, eq);
+						else if(wall1 && !wall4)
+						{	
+							if(maxThree > maxFour)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxFour > maxThree)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
 						}
-						else if(maxFour > maxThree && maxFour > maxFirst)
+						else if(!wall1 && wall4)
 						{
-							g.policy = make_pair(EAST, eq);
+							if(maxFirst > maxThree)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxThree > maxFirst)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+						}
+						else if(!wall1 && !wall4)
+						{
+							if(maxThree > maxFirst && maxThree > maxFour)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxFirst > maxThree && maxFirst > maxFour)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxFour > maxThree && maxFour > maxFirst)
+							{	
+								g.policy = make_pair(EAST, eq);
+							}
 						}
 					}
 					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
@@ -1465,17 +2016,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
 					{
-						if(maxThree > maxSecond && maxThree > maxFour)
+						if(wall2 && wall4)
 						{
 							g.policy = make_pair(WEST, eq);
 						}
-						else if(maxSecond > maxThree && maxSecond > maxFour)
-						{
-							g.policy = make_pair(SOUTH, eq);
+						else if(wall2 && !wall4)
+						{	
+							if(maxThree > maxFour)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxFour > maxThree)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
 						}
-						else if(maxFour > maxThree && maxFour > maxSecond)
+						else if(!wall2 && wall4)
 						{
-							g.policy = make_pair(EAST, eq);
+							if(maxSecond > maxThree)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxThree > maxSecond)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+						}
+						else if(!wall2 && !wall4)
+						{
+							if(maxThree > maxSecond && maxThree > maxFour)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxSecond > maxThree && maxSecond > maxFour)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxFour > maxThree && maxFour > maxSecond)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
 						}
 					}
 					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
@@ -1484,17 +2064,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
 					{
-						if(maxThree > maxSecond && maxThree > maxFirst)
+						if(wall1 && wall2)
 						{
 							g.policy = make_pair(WEST, eq);
 						}
-						else if(maxSecond > maxThree && maxSecond > maxFirst)
-						{
-							g.policy = make_pair(SOUTH, eq);
+						else if(wall1 && !wall2)
+						{	
+							if(maxThree > maxSecond)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxSecond > maxThree)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
 						}
-						else if(maxFirst > maxThree && maxFirst > maxSecond)
+						else if(!wall1 && wall2)
 						{
-							g.policy = make_pair(NORTH, eq);
+							if(maxFirst > maxThree)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxThree > maxFirst)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+						}
+						else if(!wall2 && !wall4)
+						{
+							if(maxThree > maxSecond && maxThree > maxFirst)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxSecond > maxThree && maxSecond > maxFirst)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxFirst > maxThree && maxFirst > maxSecond)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
 						}
 					}
 					else
@@ -1571,7 +2180,7 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree + maxFour;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour)
+					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour && !wall1 && !wall2 && !wall4)
 					{
 						g.policy = make_pair(WEST, eq);
 					}
@@ -1581,17 +2190,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
 					{
-						if(maxThree > maxFirst && maxThree > maxFour)
+						if(wall1 && wall4)
 						{
 							g.policy = make_pair(WEST, eq);
 						}
-						else if(maxFirst > maxThree && maxFirst > maxFour)
-						{
-							g.policy = make_pair(NORTH, eq);
+						else if(wall1 && !wall4)
+						{	
+							if(maxThree > maxFour)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxFour > maxThree)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
 						}
-						else if(maxFour > maxThree && maxFour > maxFirst)
+						else if(!wall1 && wall4)
 						{
-							g.policy = make_pair(EAST, eq);
+							if(maxFirst > maxThree)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxThree > maxFirst)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+						}
+						else if(!wall1 && !wall4)
+						{
+							if(maxThree > maxFirst && maxThree > maxFour)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxFirst > maxThree && maxFirst > maxFour)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxFour > maxThree && maxFour > maxFirst)
+							{	
+								g.policy = make_pair(EAST, eq);
+							}
 						}
 					}
 					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
@@ -1600,17 +2238,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
 					{
-						if(maxThree > maxSecond && maxThree > maxFour)
+						if(wall2 && wall4)
 						{
 							g.policy = make_pair(WEST, eq);
 						}
-						else if(maxSecond > maxThree && maxSecond > maxFour)
-						{
-							g.policy = make_pair(SOUTH, eq);
+						else if(wall2 && !wall4)
+						{	
+							if(maxThree > maxFour)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxFour > maxThree)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
 						}
-						else if(maxFour > maxThree && maxFour > maxSecond)
+						else if(!wall2 && wall4)
 						{
-							g.policy = make_pair(EAST, eq);
+							if(maxSecond > maxThree)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxThree > maxSecond)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+						}
+						else if(!wall2 && !wall4)
+						{
+							if(maxThree > maxSecond && maxThree > maxFour)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxSecond > maxThree && maxSecond > maxFour)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxFour > maxThree && maxFour > maxSecond)
+							{
+								g.policy = make_pair(EAST, eq);
+							}
 						}
 					}
 					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
@@ -1619,17 +2286,46 @@ int main(int argc, char ** argv)
 					}
 					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
 					{
-						if(maxThree > maxSecond && maxThree > maxFirst)
+						if(wall1 && wall2)
 						{
 							g.policy = make_pair(WEST, eq);
 						}
-						else if(maxSecond > maxThree && maxSecond > maxFirst)
-						{
-							g.policy = make_pair(SOUTH, eq);
+						else if(wall1 && !wall2)
+						{	
+							if(maxThree > maxSecond)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxSecond > maxThree)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
 						}
-						else if(maxFirst > maxThree && maxFirst > maxSecond)
+						else if(!wall1 && wall2)
 						{
-							g.policy = make_pair(NORTH, eq);
+							if(maxFirst > maxThree)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxThree > maxFirst)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+						}
+						else if(!wall2 && !wall4)
+						{
+							if(maxThree > maxSecond && maxThree > maxFirst)
+							{
+								g.policy = make_pair(WEST, eq);
+							}
+							else if(maxSecond > maxThree && maxSecond > maxFirst)
+							{
+								g.policy = make_pair(SOUTH, eq);
+							}
+							else if(maxFirst > maxThree && maxFirst > maxSecond)
+							{
+								g.policy = make_pair(NORTH, eq);
+							}
 						}
 					}
 					else

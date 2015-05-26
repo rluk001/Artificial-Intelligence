@@ -255,7 +255,8 @@ void Grid::print(const pair<int,int> & agentPos) const
 
 int main(int argc, char ** argv)
 {
-	srand(time(NULL)); //change to srand(time(NULL)) later
+	time_t seconds = time(NULL);
+	srand(seconds); //change to srand(time(NULL)) later
 
 	if(argc == 3)
 	{
@@ -479,32 +480,36 @@ int main(int argc, char ** argv)
 					a[make_pair(i,j)] = g;
 					continue;
 				}
-				g.type = GridCell::BLANK;
+				g.type = GridCell::BLANK; 	// Setting each grid cell to the specific thing
 				g.reward = 0.0;
 				g.start = false;
 				g.lRate = 0;
-				a[make_pair(i,j)] = g;
+				a[make_pair(i,j)] = g; 
 			}
 		}
+		cout << "n: " << n << " m: " << m << endl;
+		cout << "seed: " << seconds << endl;
 		a.print(make_pair(startX, startY));
 		bool outside = false;
-		for(unsigned int i = 0; i < 100000; i++)
+		unsigned int iteration = 0;
+		for(unsigned int i = 0; i < 100000; i++)				// ITERATIONS
 		{
 			GridCell g = a[a.getStartLocation()];
 			unsigned int xCoord = a.getStartLocation().first;
 			unsigned int yCoord = a.getStartLocation().second;
 			GridCell f = a[pair<int, int>(xCoord, yCoord)];
 			unsigned rerollWorld = 0;
+			iteration = 1 + i;
 			Randomize:
 			unsigned int randDirection = (rand() % 4) + 1;
-			if(rerollWorld >= 1000)
+			if(rerollWorld >= 10000)
 			{
 				cout << "No Possible Values - Start again to remake world!!!" << endl;
 				outside = true;
 				break;
 			}
 
-			if(randDirection == 1)
+			if(randDirection == 1) //Direction NORTH
 			{
 				if(xCoord == 0)
 				{
@@ -581,15 +586,19 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree + maxFour; 
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward + ((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour && !wall1 && !wall2 && !wall4)
+					if(maxThree >= 0)
+					{
+						g.policy = make_pair(NORTH, eq);	
+					}
+					else if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour && !wall1 && !wall2 && !wall4)
 					{
 						g.policy = make_pair(NORTH, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2) 
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2 && !wall1 && !wall4) 
 					{
 						g.policy = make_pair(EAST, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
+					else if(wall2)
 					{
 						if(wall1 && wall4)
 						{
@@ -633,11 +642,11 @@ int main(int argc, char ** argv)
 							}
 						}
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1 && !wall2 && !wall4)
 					{
 						g.policy = make_pair(WEST, eq);
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
+					else if(wall1)
 					{
 						if(wall2 && wall4)
 						{
@@ -656,13 +665,13 @@ int main(int argc, char ** argv)
 						}
 						else if(!wall2 && wall4)
 						{
-							if(maxSecond > maxThree)
-							{
-								g.policy = make_pair(EAST, eq);
-							}
-							else if(maxThree > maxSecond)
+							if(maxThree > maxSecond)
 							{
 								g.policy = make_pair(NORTH, eq);
+							}
+							else if(maxSecond > maxThree)
+							{
+								g.policy = make_pair(EAST, eq);
 							}
 						}
 						else if(!wall2 && !wall4)
@@ -681,11 +690,11 @@ int main(int argc, char ** argv)
 							}
 						}
 					}
-					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4 && !wall1 && !wall2) 
 					{
 						g.policy = make_pair(SOUTH, eq);
 					}
-					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
+					else if(wall4)
 					{
 						if(wall1 && wall2)
 						{
@@ -713,7 +722,7 @@ int main(int argc, char ** argv)
 								g.policy = make_pair(NORTH, eq);
 							}
 						}
-						else if(!wall2 && !wall4)
+						else if(!wall2 && !wall1)
 						{
 							if(maxThree > maxSecond && maxThree > maxFirst)
 							{
@@ -807,11 +816,11 @@ int main(int argc, char ** argv)
 					{
 						g.policy = make_pair(NORTH, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2) 
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2 && !wall1 && !wall4) 
 					{
 						g.policy = make_pair(EAST, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
+					else if(wall2)
 					{
 						if(wall1 && wall4)
 						{
@@ -855,11 +864,11 @@ int main(int argc, char ** argv)
 							}
 						}
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1 && !wall2 && !wall4)
 					{
 						g.policy = make_pair(WEST, eq);
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
+					else if(wall1)
 					{
 						if(wall2 && wall4)
 						{
@@ -903,11 +912,11 @@ int main(int argc, char ** argv)
 							}
 						}
 					}
-					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4 && !wall1 && !wall2) 
 					{
 						g.policy = make_pair(SOUTH, eq);
 					}
-					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
+					else if(wall4)
 					{
 						if(wall1 && wall2)
 						{
@@ -935,7 +944,7 @@ int main(int argc, char ** argv)
 								g.policy = make_pair(NORTH, eq);
 							}
 						}
-						else if(!wall2 && !wall4)
+						else if(!wall2 && !wall1)
 						{
 							if(maxThree > maxSecond && maxThree > maxFirst)
 							{
@@ -963,7 +972,7 @@ int main(int argc, char ** argv)
 					goto Randomize;
 				}
 			}
-			else if(randDirection == 2)
+			else if(randDirection == 2) //Direction EAST
 			{
 				if(yCoord == (n-1))
 				{
@@ -1040,15 +1049,19 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree + maxFour;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour && !wall1 && !wall2 && !wall4)
+					if(maxThree >= 0)
 					{
 						g.policy = make_pair(EAST, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2) 
+					else if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour && !wall1 && !wall2 && !wall4)
+					{
+						g.policy = make_pair(EAST, eq);
+					}
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2 && !wall1 && !wall4) 
 					{
 						g.policy = make_pair(SOUTH, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
+					else if(wall2)
 					{
 						if(wall1 && wall4)
 						{
@@ -1092,11 +1105,11 @@ int main(int argc, char ** argv)
 							}
 						}
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1 && !wall2 && !wall4)
 					{
 						g.policy = make_pair(NORTH, eq);
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
+					else if(wall1)
 					{
 						if(wall2 && wall4)
 						{
@@ -1140,11 +1153,11 @@ int main(int argc, char ** argv)
 							}
 						}
 					}
-					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4 && !wall1 && !wall2) 
 					{
 						g.policy = make_pair(WEST, eq);
 					}
-					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
+					else if(wall4)
 					{
 						if(wall1 && wall2)
 						{
@@ -1172,7 +1185,7 @@ int main(int argc, char ** argv)
 								g.policy = make_pair(EAST, eq);
 							}
 						}
-						else if(!wall2 && !wall4)
+						else if(!wall2 && !wall1)
 						{
 							if(maxThree > maxSecond && maxThree > maxFirst)
 							{
@@ -1266,11 +1279,11 @@ int main(int argc, char ** argv)
 					{
 						g.policy = make_pair(EAST, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2) 
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2 && !wall1 && !wall4) 
 					{
 						g.policy = make_pair(SOUTH, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
+					else if(wall2)
 					{
 						if(wall1 && wall4)
 						{
@@ -1314,11 +1327,11 @@ int main(int argc, char ** argv)
 							}
 						}
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1 && !wall2 && !wall4)
 					{
 						g.policy = make_pair(NORTH, eq);
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
+					else if(wall1)
 					{
 						if(wall2 && wall4)
 						{
@@ -1362,11 +1375,11 @@ int main(int argc, char ** argv)
 							}
 						}
 					}
-					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4 && !wall1 && !wall2) 
 					{
 						g.policy = make_pair(WEST, eq);
 					}
-					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
+					else if(wall4)
 					{
 						if(wall1 && wall2)
 						{
@@ -1394,7 +1407,7 @@ int main(int argc, char ** argv)
 								g.policy = make_pair(EAST, eq);
 							}
 						}
-						else if(!wall2 && !wall4)
+						else if(!wall2 && !wall1)
 						{
 							if(maxThree > maxSecond && maxThree > maxFirst)
 							{
@@ -1422,7 +1435,7 @@ int main(int argc, char ** argv)
 					goto Randomize;
 				}
 			}
-			else if(randDirection == 3)
+			else if(randDirection == 3) //Direction SOUTH
 			{
 				if(xCoord == (n-1))
 				{
@@ -1499,15 +1512,19 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree + maxFour;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour && !wall1 && !wall2 && !wall4)
+					if(maxThree >= 0)
 					{
 						g.policy = make_pair(SOUTH, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2) 
+					else if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour && !wall1 && !wall2 && !wall4)
+					{
+						g.policy = make_pair(SOUTH, eq);
+					}
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2 && !wall1 && !wall4) 
 					{
 						g.policy = make_pair(EAST, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
+					else if(wall2)
 					{
 						if(wall1 && wall4)
 						{
@@ -1551,11 +1568,11 @@ int main(int argc, char ** argv)
 							}
 						}
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1 && !wall2 && !wall4)
 					{
 						g.policy = make_pair(WEST, eq);
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
+					else if(wall1)
 					{
 						if(wall2 && wall4)
 						{
@@ -1599,11 +1616,11 @@ int main(int argc, char ** argv)
 							}
 						}
 					}
-					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4 && !wall1 && !wall2) 
 					{
 						g.policy = make_pair(NORTH, eq);
 					}
-					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
+					else if(wall4)
 					{
 						if(wall1 && wall2)
 						{
@@ -1631,7 +1648,7 @@ int main(int argc, char ** argv)
 								g.policy = make_pair(SOUTH, eq);
 							}
 						}
-						else if(!wall2 && !wall4)
+						else if(!wall2 && !wall1)
 						{
 							if(maxThree > maxSecond && maxThree > maxFirst)
 							{
@@ -1725,11 +1742,11 @@ int main(int argc, char ** argv)
 					{
 						g.policy = make_pair(SOUTH, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2) 
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2 && !wall1 && !wall4) 
 					{
 						g.policy = make_pair(EAST, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
+					else if(wall2)
 					{
 						if(wall1 && wall4)
 						{
@@ -1773,11 +1790,11 @@ int main(int argc, char ** argv)
 							}
 						}
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1 && !wall2 && !wall4)
 					{
 						g.policy = make_pair(WEST, eq);
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
+					else if(wall1)
 					{
 						if(wall2 && wall4)
 						{
@@ -1821,11 +1838,11 @@ int main(int argc, char ** argv)
 							}
 						}
 					}
-					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4 && !wall1 && !wall2) 
 					{
 						g.policy = make_pair(NORTH, eq);
 					}
-					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
+					else if(wall4)
 					{
 						if(wall1 && wall2)
 						{
@@ -1853,7 +1870,7 @@ int main(int argc, char ** argv)
 								g.policy = make_pair(SOUTH, eq);
 							}
 						}
-						else if(!wall2 && !wall4)
+						else if(!wall2 && !wall1)
 						{
 							if(maxThree > maxSecond && maxThree > maxFirst)
 							{
@@ -1869,10 +1886,10 @@ int main(int argc, char ** argv)
 							}
 						}
 					}
-					/*else
+					else
 					{
 						g.policy = make_pair(SOUTH, eq);
-					}*/
+					}
 					a[pair<int, int>(xCoord, yCoord)] = g;
 					xCoord = xCoord + 1;
 					a[pair<int, int>(xCoord, yCoord)] = f;
@@ -1881,7 +1898,7 @@ int main(int argc, char ** argv)
 					goto Randomize;
 				}
 			}
-			else if(randDirection == 4)
+			else if(randDirection == 4) // Direction WEST
 			{
 				if(yCoord == 0)
 				{
@@ -1958,15 +1975,19 @@ int main(int argc, char ** argv)
 					double maxNum = maxFirst + maxSecond + maxThree + maxFour;
 					f.lRate++;
 					double eq = g.policy.second + (60.0/(f.lRate+59))*(g.reward+((0.9*maxNum) - g.policy.second));
-					if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour && !wall1 && !wall2 && !wall4)
+					if(maxThree >= 0)
 					{
 						g.policy = make_pair(WEST, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2) 
+					else if(maxThree > maxSecond && maxThree > maxFirst && maxThree > maxFour && !wall1 && !wall2 && !wall4)
+					{
+						g.policy = make_pair(WEST, eq);
+					}
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2 && !wall1 && !wall4) 
 					{
 						g.policy = make_pair(SOUTH, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
+					else if(wall2)
 					{
 						if(wall1 && wall4)
 						{
@@ -2010,11 +2031,11 @@ int main(int argc, char ** argv)
 							}
 						}
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1 && !wall2 && !wall4)
 					{
 						g.policy = make_pair(NORTH, eq);
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
+					else if(wall1)
 					{
 						if(wall2 && wall4)
 						{
@@ -2058,11 +2079,11 @@ int main(int argc, char ** argv)
 							}
 						}
 					}
-					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4 && !wall1 && !wall2) 
 					{
 						g.policy = make_pair(EAST, eq);
 					}
-					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
+					else if(wall4)
 					{
 						if(wall1 && wall2)
 						{
@@ -2090,7 +2111,7 @@ int main(int argc, char ** argv)
 								g.policy = make_pair(WEST, eq);
 							}
 						}
-						else if(!wall2 && !wall4)
+						else if(!wall2 && !wall1)
 						{
 							if(maxThree > maxSecond && maxThree > maxFirst)
 							{
@@ -2184,11 +2205,11 @@ int main(int argc, char ** argv)
 					{
 						g.policy = make_pair(WEST, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2) 
+					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && !wall2 && !wall1 && !wall4) 
 					{
 						g.policy = make_pair(SOUTH, eq);
 					}
-					else if(maxSecond > maxThree && maxSecond > maxFirst && maxSecond > maxFour && wall2) 
+					else if(wall2)
 					{
 						if(wall1 && wall4)
 						{
@@ -2232,11 +2253,11 @@ int main(int argc, char ** argv)
 							}
 						}
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1)
+					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && !wall1 && !wall2 && !wall4)
 					{
 						g.policy = make_pair(NORTH, eq);
 					}
-					else if(maxFirst > maxThree && maxFirst > maxSecond && maxFirst > maxFour && wall1)
+					else if(wall1)
 					{
 						if(wall2 && wall4)
 						{
@@ -2280,11 +2301,11 @@ int main(int argc, char ** argv)
 							}
 						}
 					}
-					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4) 
+					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && !wall4 && !wall1 && !wall2) 
 					{
 						g.policy = make_pair(EAST, eq);
 					}
-					else if(maxFour > maxThree && maxFour > maxSecond && maxFour > maxFirst && wall4) 
+					else if(wall4)
 					{
 						if(wall1 && wall2)
 						{
@@ -2312,7 +2333,7 @@ int main(int argc, char ** argv)
 								g.policy = make_pair(WEST, eq);
 							}
 						}
-						else if(!wall2 && !wall4)
+						else if(!wall2 && !wall1)
 						{
 							if(maxThree > maxSecond && maxThree > maxFirst)
 							{
@@ -2343,6 +2364,7 @@ int main(int argc, char ** argv)
 		}
 		if(!outside)
 		{
+			cout << endl << "Iterations: " << iteration << endl;
 			a.print(make_pair(startX, startY));
 		}
 		//cout << a.getBounds().first << " " << a.getBounds().second << endl;
